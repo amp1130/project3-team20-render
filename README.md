@@ -1,4 +1,4 @@
 # project3-team20
 
-npm install
-npm run dev
+First run: npm install 
+Next run:  npm run dev
