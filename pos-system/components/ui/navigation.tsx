@@ -33,16 +33,30 @@ export function Navigation() {
   };
 
   const handlePasswordSubmit = (password: string) => {
-    // Replace with your actual password validation
-    const managerPassword = "manager123"; // In production, use environment variables
-    
-    if (password === managerPassword) {
-      setManagerMode(true);
-      setIsPasswordModalOpen(false);
-      setPasswordError("");
-    } else {
-      setPasswordError("Incorrect password");
-    }
+    // Get manager password from environment variable
+    // Note: We need to create an API route for this since environment variables
+    // with MANAGER_ prefix are not exposed to the client
+    fetch('/api/verify-manager-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setManagerMode(true);
+          setIsPasswordModalOpen(false);
+          setPasswordError("");
+        } else {
+          setPasswordError("Incorrect password");
+        }
+      })
+      .catch(error => {
+        console.error('Error verifying password:', error);
+        setPasswordError("An error occurred. Please try again.");
+      });
   };
 
   return (

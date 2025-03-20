@@ -33,8 +33,15 @@ export function WeatherDisplay() {
     async function fetchWeather() {
       try {
         setLoading(true);
+        
+        // Use environment variables for weather API
+        const apiKey = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
+        const lat = process.env.NEXT_PUBLIC_WEATHER_LAT;
+        const lon = process.env.NEXT_PUBLIC_WEATHER_LON;
+        const asl = process.env.NEXT_PUBLIC_WEATHER_ASL;
+        
         const response = await fetch(
-          "https://my.meteoblue.com/packages/current?apikey=6K4FEP0sWOLGQZkM&lat=32.7831&lon=-96.8067&asl=128&format=json"
+          `https://my.meteoblue.com/packages/current?apikey=${apiKey}&lat=${lat}&lon=${lon}&asl=${asl}&format=json`
         );
         
         if (!response.ok) {
