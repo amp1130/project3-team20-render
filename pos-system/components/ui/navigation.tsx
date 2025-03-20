@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
+import { WeatherDisplay } from "./weather-display";
 
 export function Navigation() {
   const router = useRouter();
@@ -15,8 +16,14 @@ export function Navigation() {
 
   return (
     <div className="fixed top-0 left-0 right-0 flex items-center p-4 bg-card/80 backdrop-blur-sm z-10 border-b border-gray-300">
-      <Image src="/logo.png" alt="Logo" width={56} height={56} className="mr-4" />
+      <Image src="/logo.png" alt="Logo" width={56} height={56} className="mr-12" />
       <p className="text-[#3c2f1f] font-medium">Welcome, {userName}</p>
+      
+      {/* weather api */}
+      <div className="ml-12">
+        <WeatherDisplay />
+      </div>
+      
       <div className="ml-auto">
         <UserButton 
           afterSignOutUrl="/"
