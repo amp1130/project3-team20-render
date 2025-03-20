@@ -9,3 +9,14 @@ export async function getMenuItems() {
     return [];
   }
 } 
+
+// function to get sales by item for a specific date
+export async function query({ query, values = [] }) {
+  try {
+    const [results] = await pool.execute(query, values);
+    return results;
+  } catch (error) {
+    console.error('Database query error:', error);
+    throw error;
+  }
+}

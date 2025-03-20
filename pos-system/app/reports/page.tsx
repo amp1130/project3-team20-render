@@ -7,12 +7,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { useManager } from "@/context/manager-context";
 import { AreaChart, BarChart, LineChart, PieChart } from "@/components/ui/charts";
-import { Loader2, TrendingUp, TrendingDown, Minus, AlertCircle, Download } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, Minus, AlertCircle, Download, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
+import { query } from '@/lib/db-utils';
 
 interface Order {
   order_id: number;
@@ -34,8 +38,12 @@ function formatNumber(num: number): string {
 
 export default function ReportsPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeWindow, setTimeWindow] = useState<TimeWindow>("total");
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [showItemizedSales, setShowItemizedSales] = useState(false);
   const router = useRouter();
   const { isManagerMode, isInitialized } = useManager();
 
@@ -73,6 +81,34 @@ export default function ReportsPage() {
 
     fetchOrders();
   }, [isManagerMode, isInitialized, router]);
+
+  // Fetch order items for a specific date
+  const fetchOrderItemsByDate = async (date: string) => {
+    try {
+      setLoading(true);
+      
+      // API call with date
+      const response = await fetch(`/api/sales-by-item?date=${date}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch order items2");
+      }
+      
+      const data = await response.json();
+      setOrderItems(data);
+      setShowItemizedSales(true);
+    } catch (error) {
+      console.error("Error fetching order items:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+    // Handle date selection from dialog
+  const handleDateSelect = () => {
+    setDatePickerOpen(false);
+    fetchOrderItemsByDate(selectedDate);
+  };
+    
 
   // Filter orders based on time window
   const filteredOrders = useMemo(() => {
@@ -424,7 +460,55 @@ export default function ReportsPage() {
     // Save the PDF with a properly formatted filename
     doc.save(`sales-report-${timeWindow}-${date.replace(/\//g, '-')}.pdf`);
   };
-
+  // Render daily sales by item
+  const renderDailySalesByItem = () => (
+    <Card>
+      <CardHeader className="pb-2 flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Daily Sales by Item - {new Date(selectedDate).toLocaleDateString()}</CardTitle>
+          <CardDescription>Itemized sales for the selected date</CardDescription>
+        </div>
+        <Button 
+          onClick={() => setShowItemizedSales(false)} 
+          variant="outline" 
+          className="bg-[#e6ded5] text-[#3c2f1f] hover:bg-[#d4c8bc]"
+        >
+          Back to Charts
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-auto max-h-[400px]">
+          <table className="w-full">
+            <thead className="sticky top-0 bg-[#a67c52] text-white">
+              <tr>
+                <th className="text-left p-3 rounded-tl-md">Menu Item</th>
+                <th className="text-center p-3">Quantity</th>
+                <th className="text-right p-3 rounded-tr-md">Sales</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderItems.map((item, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-[#f5f5f5]"}>
+                  <td className="text-left p-3 font-medium">{item.item_name}</td>
+                  <td className="text-center p-3">{item.quantity}</td>
+                  <td className="text-right p-3">${formatNumber(item.quantity * item.price)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot className="bg-[#e6ded5] font-bold">
+              <tr>
+                <td className="text-left p-3">Total</td>
+                <td className="text-center p-3">{orderItems.reduce((sum, item) => sum + item.quantity, 0)}</td>
+                <td className="text-right p-3">
+                  ${formatNumber(orderItems.reduce((sum, item) => sum + (item.quantity * item.price), 0))}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f8f5f2] flex items-center justify-center">
@@ -517,90 +601,129 @@ export default function ReportsPage() {
           </Card>
         </div>
 
-        <Tabs defaultValue="daily-sales" className="mt-8">
-          <TabsList className="mb-4">
-            <TabsTrigger value="daily-sales">Daily Sales</TabsTrigger>
-            <TabsTrigger value="hourly-sales">Hourly Sales</TabsTrigger>
-            <TabsTrigger value="tips">Tips Distribution</TabsTrigger>
-          </TabsList>
-          <TabsContent value="daily-sales">
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2">
-                <div>
-                  <CardTitle>Daily Sales</CardTitle>
-                  <CardDescription>
-                    Sales performance by day
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent className="h-[400px] pt-6">
-                {!hasData ? (
-                  renderEmptyState()
-                ) : (
-                  <AreaChart 
-                    data={dailySalesData}
-                    categories={["sales"]}
-                    index="date"
-                    valueFormatter={(value) => `$${formatNumber(value)}`}
-                    yAxisWidth={65}
-                    colors={["#a67c52"]}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+        {showItemizedSales ? (
+          renderDailySalesByItem()
+        ) : (
+          <Tabs defaultValue="daily-sales" className="mt-8">
+            <TabsList className="mb-4">
+              <TabsTrigger value="daily-sales">Daily Sales</TabsTrigger>
+              <TabsTrigger value="hourly-sales">Hourly Sales</TabsTrigger>
+              <TabsTrigger value="tips">Tips Distribution</TabsTrigger>
+            </TabsList>
+            <TabsContent value="daily-sales">
+              <Card>
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2">
+                  <div>
+                    <CardTitle>Daily Sales</CardTitle>
+                    <CardDescription>
+                      Sales performance by day
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => setDatePickerOpen(true)}
+                    className="mt-2 sm:mt-0 flex items-center gap-2 bg-[#e6ded5] text-[#3c2f1f] hover:bg-[#d4c8bc]"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    <span>View Sales by Item</span>
+                  </Button>
+                </CardHeader>
+                <CardContent className="h-[400px] pt-6">
+                  {!hasData ? (
+                    renderEmptyState()
+                  ) : (
+                    <AreaChart 
+                      data={dailySalesData}
+                      categories={["sales"]}
+                      index="date"
+                      valueFormatter={(value) => `$${formatNumber(value)}`}
+                      yAxisWidth={65}
+                      colors={["#a67c52"]}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="hourly-sales">
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2">
-                <div>
-                  <CardTitle>Hourly Sales</CardTitle>
-                  <CardDescription>
-                    Sales performance by hour of day
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent className="h-[400px] pt-6">
-                {!hasData ? (
-                  renderEmptyState()
-                ) : (
-                  <BarChart 
-                    data={salesByHourData}
-                    categories={["sales"]}
-                    index="hour"
-                    valueFormatter={(value) => `$${formatNumber(value)}`}
-                    yAxisWidth={65}
-                    colors={["#a67c52"]}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="tips" className="space-y-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Tips Distribution</CardTitle>
-                  <CardDescription>
-                    Proportion of tips to total sales
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent className="h-[400px] pt-6">
-                {!hasData ? (
-                  renderEmptyState()
-                ) : (
-                  <PieChart 
-                    data={tipsDistributionData}
-                    category="value"
-                    index="name"
-                    valueFormatter={(value) => `$${formatNumber(value)}`}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="hourly-sales">
+              <Card>
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2">
+                  <div>
+                    <CardTitle>Hourly Sales</CardTitle>
+                    <CardDescription>
+                      Sales performance by hour of day
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="h-[400px] pt-6">
+                  {!hasData ? (
+                    renderEmptyState()
+                  ) : (
+                    <BarChart 
+                      data={salesByHourData}
+                      categories={["sales"]}
+                      index="hour"
+                      valueFormatter={(value) => `$${formatNumber(value)}`}
+                      yAxisWidth={65}
+                      colors={["#a67c52"]}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="tips" className="space-y-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Tips Distribution</CardTitle>
+                    <CardDescription>
+                      Proportion of tips to total sales
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="h-[400px] pt-6">
+                  {!hasData ? (
+                    renderEmptyState()
+                  ) : (
+                    <PieChart 
+                      data={tipsDistributionData}
+                      category="value"
+                      index="name"
+                      valueFormatter={(value) => `$${formatNumber(value)}`}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        )}
+
+        {/* Date Picker Dialog */}
+        <Dialog open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Select a Date for Itemized Sales</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="date" className="text-right">
+                  Date
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={handleDateSelect} className="bg-[#a67c52] hover:bg-[#8c6b45]">
+                View Sales Report
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
