@@ -2,11 +2,11 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, ShoppingCart, BarChart2, Package } from "lucide-react";
+import { ArrowLeft, User, ShoppingCart, BarChart2, Package, X, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { WeatherDisplay } from "./weather-display";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PasswordModal } from "./password-modal";
 import { ConfirmationModal } from "./confirmation-modal";
 import { useManager } from "@/context/manager-context";
@@ -19,9 +19,32 @@ export function Navigation() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   
   // Get the user's first name or username
   const userName = user?.firstName || user?.username || "Guest";
+
+  // Handle showing and hiding the success toast
+  useEffect(() => {
+    if (showSuccessToast) {
+      // Set timer to start fade-out animation
+      const fadeOutTimer = setTimeout(() => {
+        setIsFadingOut(true);
+      }, 2500); // Start fade out after 2.5 seconds
+      
+      // Set timer to completely remove toast after animation
+      const removeTimer = setTimeout(() => {
+        setShowSuccessToast(false);
+        setIsFadingOut(false);
+      }, 3000); // Remove after 3 seconds (allowing 500ms for fade animation)
+      
+      return () => {
+        clearTimeout(fadeOutTimer);
+        clearTimeout(removeTimer);
+      };
+    }
+  }, [showSuccessToast]);
 
   const handleManagerToggle = () => {
     if (isManagerMode) {
@@ -50,6 +73,7 @@ export function Navigation() {
           setManagerMode(true);
           setIsPasswordModalOpen(false);
           setPasswordError("");
+          setShowSuccessToast(true); // Show success toast
         } else {
           setPasswordError("Incorrect password");
         }
@@ -58,6 +82,15 @@ export function Navigation() {
         console.error('Error verifying password:', error);
         setPasswordError("An error occurred. Please try again.");
       });
+  };
+
+  // When toast close button is clicked
+  const handleCloseToast = () => {
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setShowSuccessToast(false);
+      setIsFadingOut(false);
+    }, 300); // Allow 300ms for fade-out animation
   };
 
   return (
@@ -158,6 +191,27 @@ export function Navigation() {
         title="Exit Manager Mode"
         message="Are you sure you want to switch back to cashier mode? You will need to enter the password again to return to manager mode."
       />
+      
+      {/* Success Toast with fade-out animation */}
+      {showSuccessToast && (
+        <div 
+          className={`fixed bottom-4 right-4 bg-green-50 border border-green-200 text-green-800 rounded-md shadow-md p-4 flex items-center z-50 transition-opacity duration-300 ease-in-out ${
+            isFadingOut ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
+          <div>
+            <h3 className="font-medium">Success!</h3>
+            <p className="text-sm">Logged in to manager mode</p>
+          </div>
+          <button 
+            onClick={handleCloseToast}
+            className="ml-4 text-green-600 hover:text-green-800"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </>
   );
 }
