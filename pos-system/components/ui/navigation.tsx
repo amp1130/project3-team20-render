@@ -2,7 +2,7 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft, User, ShoppingCart, BarChart2, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { WeatherDisplay } from "./weather-display";
@@ -10,6 +10,7 @@ import { useState } from "react";
 import { PasswordModal } from "./password-modal";
 import { ConfirmationModal } from "./confirmation-modal";
 import { useManager } from "@/context/manager-context";
+import Link from 'next/link';
 
 export function Navigation() {
   const router = useRouter();
@@ -62,7 +63,9 @@ export function Navigation() {
   return (
     <>
       <div className="fixed top-0 left-0 right-0 flex items-center p-4 bg-card/80 backdrop-blur-sm z-10 border-b border-gray-300">
-        <Image src="/logo.png" alt="Logo" width={56} height={56} className="mr-12" />
+        <Link href="/" className="cursor-pointer">
+          <Image src="/logo.png" alt="Logo" width={56} height={56} className="mr-12" />
+        </Link>
         <p className="text-[#3c2f1f] font-medium">Welcome, {userName}</p>
         
         {/* weather api */}
@@ -70,15 +73,25 @@ export function Navigation() {
           <WeatherDisplay />
         </div>
         
-        <div className="ml-auto flex items-center gap-3.5">
+        <div className="ml-auto flex items-center">
+          <Button
+            variant="outline"
+            className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
+            onClick={() => router.push('/')}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            Order Screen
+          </Button>
+          
           {/* Manager-specific buttons (only visible in manager mode) */}
           {isManagerMode && (
-            <div className="flex gap-3">
+            <div className="flex mr-2">
               <Button
                 variant="outline"
-                className="border-[#d4c8bc] bg-transparent text-[#5c4f42]"
+                className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
                 onClick={() => router.push('/reports')}
               >
+                <BarChart2 className="h-4 w-4" />
                 View Reports
               </Button>
               <Button
@@ -86,6 +99,7 @@ export function Navigation() {
                 className="border-[#d4c8bc] bg-transparent text-[#5c4f42]"
                 onClick={() => router.push('/inventory')}
               >
+                <Package className="h-4 w-4" />
                 Inventory
               </Button>
             </div>
@@ -94,7 +108,7 @@ export function Navigation() {
           {/* Manager Mode Toggle Button */}
           <Button
             variant="outline"
-            className={`border-[#d4c8bc] ${
+            className={`border-[#d4c8bc] mr-2 ${
               isManagerMode 
                 ? "bg-[#e6ded5] text-[#3c2f1f]" 
                 : "bg-transparent text-[#5c4f42]"
