@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       const updateQuery = `
         UPDATE ingredients 
         SET current_count = current_count + $1,
-            restock_count = restock_count + 1
+            restock_count = restock_count + $1
         WHERE ingredient_id = $2
         RETURNING *
       `;

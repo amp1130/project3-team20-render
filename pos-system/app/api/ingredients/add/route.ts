@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
-import { sanitizeString, validateIngredientId, validateAmount, validateIngredientName } from '@/lib/validation';
 
 // Create a connection pool
 const pool = new Pool({
@@ -17,14 +16,9 @@ export async function POST(request: Request) {
     const { ingredient_id, ingredient_name, current_amount, critical_amount } = await request.json();
     
     // Validate required fields
-    const sanitizedName = sanitizeString(ingredient_name);
-
-    if (!validateIngredientId(ingredient_id) || 
-        !validateIngredientName(sanitizedName) || 
-        !validateAmount(current_amount) || 
-        !validateAmount(critical_amount)) {
+    if (!ingredient_id || !ingredient_name || current_amount === undefined || critical_amount === undefined) {
       return NextResponse.json(
-        { error: "Invalid input data" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -80,7 +74,7 @@ export async function POST(request: Request) {
       
       const result = await client.query(insertQuery, [
         ingredient_id,
-        sanitizedName,
+        ingredient_name,
         current_amount,
         critical_amount
       ]);
