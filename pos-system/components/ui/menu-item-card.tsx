@@ -64,25 +64,8 @@ const getProductEmojis = (productName: string): string => {
   }
 };
 
-// Function to get random pastel background color
-const getBackgroundColor = (): string => {
-  // Generate a random pastel color
-  const colors = [
-    "bg-red-100", "bg-blue-100", "bg-green-100", "bg-yellow-100", 
-    "bg-purple-100", "bg-pink-100", "bg-indigo-100", "bg-teal-100",
-    "bg-orange-100", "bg-amber-100", "bg-lime-100", "bg-emerald-100",
-    "bg-cyan-100", "bg-sky-100", "bg-violet-100", "bg-fuchsia-100"
-  ];
-  
-  // Get a truly random index
-  const randomIndex = Math.floor(Math.random() * colors.length);
-  return colors[randomIndex];
-};
-
 export function MenuItemCard({ item }: MenuItemCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  // Store the random background color in state so it doesn't change on re-renders
-  const [backgroundColor] = useState(getBackgroundColor());
   
   const handleAddToOrder = () => {
     // Convert price to number to ensure consistency
@@ -114,7 +97,7 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`h-20 w-full flex items-center justify-center ${backgroundColor}`}>
+      <div className="h-20 w-full flex items-center justify-center bg-[#f2e1d0]">
         <div className="text-3xl">{emojis}</div>
       </div>
       <CardContent className="p-3 pb-1 pt-2 flex-grow">
@@ -127,7 +110,7 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
       </CardContent>
       <CardFooter className="px-3 pt-0 pb-2">
         <Button 
-          className="w-full bg-[#a67c52] hover:bg-[#8c6542] text-white text-xs h-7"
+          className="w-full bg-[#6f4518] hover:bg-[#8c6542] text-white text-xs h-7"
           onClick={handleAddToOrder}
         >
           Add
