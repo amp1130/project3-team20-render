@@ -22,7 +22,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   
   // Sample categories - replace with your actual categories
-  const categories = ["All", "Coffee", "Tea", "Refreshers", "Boba", "Snacks"];
+  const categories = ["All", "Milk Tea", "Fruit Tea", "Blended", "Fresh Milk"];
 
   // Fetch menu items on component mount
   useEffect(() => {
