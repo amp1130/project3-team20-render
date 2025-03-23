@@ -17,6 +17,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
 import { query } from '@/lib/db-utils';
+import InventoryUsageChart from '@/components/ui/inventory-usage-chart';
 
 interface Order {
   order_id: number;
@@ -24,6 +25,12 @@ interface Order {
   order_date: string;
   total: number | string;
   tips: number | string;
+}
+
+interface OrderItem {
+  item_name: string;
+  quantity: number;
+  price: number;
 }
 
 type TimeWindow = "daily" | "weekly" | "monthly" | "yearly" | "total";
@@ -91,7 +98,7 @@ export default function ReportsPage() {
       const response = await fetch(`/api/sales-by-item?date=${date}`);
       
       if (!response.ok) {
-        throw new Error("Failed to fetch order items2");
+        throw new Error("Failed to fetch order items");
       }
       
       const data = await response.json();
@@ -103,13 +110,13 @@ export default function ReportsPage() {
       setLoading(false);
     }
   };
-    // Handle date selection from dialog
+  
+  // Handle date selection from dialog
   const handleDateSelect = () => {
     setDatePickerOpen(false);
     fetchOrderItemsByDate(selectedDate);
   };
     
-
   // Filter orders based on time window
   const filteredOrders = useMemo(() => {
     if (!orders.length) return [];
@@ -460,6 +467,7 @@ export default function ReportsPage() {
     // Save the PDF with a properly formatted filename
     doc.save(`sales-report-${timeWindow}-${date.replace(/\//g, '-')}.pdf`);
   };
+  
   // Render daily sales by item
   const renderDailySalesByItem = () => (
     <Card>
@@ -509,6 +517,7 @@ export default function ReportsPage() {
       </CardContent>
     </Card>
   );
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f8f5f2] flex items-center justify-center">
@@ -536,11 +545,16 @@ export default function ReportsPage() {
               onValueChange={(value) => setTimeWindow(value as TimeWindow)}
               className="w-40"
             >
-              <SelectItem value="daily">Today</SelectItem>
-              <SelectItem value="weekly">This Week</SelectItem>
-              <SelectItem value="monthly">This Month</SelectItem>
-              <SelectItem value="yearly">This Year</SelectItem>
-              <SelectItem value="total">All Time</SelectItem>
+              <SelectTrigger id="timeWindow">
+                <SelectValue placeholder="Select Period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="daily">Today</SelectItem>
+                <SelectItem value="weekly">This Week</SelectItem>
+                <SelectItem value="monthly">This Month</SelectItem>
+                <SelectItem value="yearly">This Year</SelectItem>
+                <SelectItem value="total">All Time</SelectItem>
+              </SelectContent>
             </Select>
           </div>
         </div>
@@ -609,6 +623,7 @@ export default function ReportsPage() {
               <TabsTrigger value="daily-sales">Daily Sales</TabsTrigger>
               <TabsTrigger value="hourly-sales">Hourly Sales</TabsTrigger>
               <TabsTrigger value="tips">Tips Distribution</TabsTrigger>
+              <TabsTrigger value="inventory">Inventory Usage</TabsTrigger>
             </TabsList>
             <TabsContent value="daily-sales">
               <Card>
@@ -670,6 +685,7 @@ export default function ReportsPage() {
                 </CardContent>
               </Card>
             </TabsContent>
+            
             <TabsContent value="tips" className="space-y-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -693,6 +709,11 @@ export default function ReportsPage() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* New Inventory Usage Tab */}
+            <TabsContent value="inventory">
+              <InventoryUsageChart />
             </TabsContent>
           </Tabs>
         )}
