@@ -464,7 +464,7 @@ export default function ReportsPage() {
       <CardContent>
         <div className="overflow-auto max-h-[400px]">
           <table className="w-full">
-            <thead className="sticky top-0 bg-[#a67c52] text-white">
+            <thead className="sticky top-0 bg-[#b79c85] text-white">
               <tr>
                 <th className="text-left p-3 rounded-tl-md">Menu Item</th>
                 <th className="text-center p-3">Quantity</th>

@@ -102,7 +102,7 @@ const InventoryUsageChart = () => {
               index="ingredient"
               valueFormatter={(value) => `${formatNumber(value)} units`}
               yAxisWidth={65}
-              colors={["#a67c52"]}
+              colors={["#b79c85"]}
             />
           )}
         </CardContent>

@@ -128,34 +128,46 @@ const XReport: React.FC = () => {
 
         {/* Employee Orders Table */}
         {reportData.employeeOrders.length > 0 ? (
-          <div className="mb-6">
+        <div className="mb-6">
             <h2 className="text-xl font-bold mb-4">Orders Processed by Employee Per Hour</h2>
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Employee</TableHead>
-                  {Object.keys(reportData.employeeOrders[0].hourlyOrders).map((hour) => (
-                    <TableHead key={hour}>{hour}</TableHead>
-                  ))}
-                  <TableHead>Total</TableHead>
+            <TableHeader>
+                <TableRow className="bg-[#e6ded5] text-[#b79c85]">
+                <TableHead className="font-bold">Employee</TableHead>
+                {Object.keys(reportData.employeeOrders[0].hourlyOrders)
+                    .filter((hour) => {
+                    const hourNum = parseInt(hour, 10);
+                    return hourNum >= 10 && hourNum <= 22;
+                    })
+                    .map((hour) => (
+                    <TableHead key={hour} className="font-bold">{hour}</TableHead>
+                    ))}
+                <TableHead className="font-bold">Total</TableHead>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
+            </TableHeader>
+
+            <TableBody>
                 {reportData.employeeOrders.map((employee, index) => (
-                  <TableRow key={index}>
+                <TableRow key={index}>
                     <TableCell>{employee.employee}</TableCell>
-                    {Object.entries(employee.hourlyOrders).map(([hour, orders]) => (
-                      <TableCell key={hour}>{orders}</TableCell>
+                    {Object.entries(employee.hourlyOrders)
+                    .filter(([hour]) => {
+                        const hourNum = parseInt(hour, 10);
+                        return hourNum >= 10 && hourNum <= 22;
+                    })
+                    .map(([hour, orders]) => (
+                        <TableCell key={hour}>{orders}</TableCell>
                     ))}
                     <TableCell>{employee.total}</TableCell>
-                  </TableRow>
+                </TableRow>
                 ))}
-              </TableBody>
+            </TableBody>
             </Table>
-          </div>
+        </div>
         ) : (
-          <p>No employee order data available.</p>
+        <p>No employee order data available.</p>
         )}
+
 
         {/* Tips Per Hour Table */}
         {reportData.tipsData.length > 0 ? (
