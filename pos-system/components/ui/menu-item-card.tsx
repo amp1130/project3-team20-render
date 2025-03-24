@@ -9,6 +9,7 @@ interface MenuItemCardProps {
   item: {
     id: number;
     item_name: string;
+    menu_id: number;
     description?: string;
     price: any;
   };
@@ -77,6 +78,7 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
     const orderItem: OrderItem = {
       id: item.id,
       item_name: item.item_name,
+      menu_id: item.menu_id,
       price: numericPrice,
       quantity: 1
     };

@@ -7,9 +7,10 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { OrderManager } from "@/components/ui/order-manager";
 import { useState, useEffect } from "react";
 
-// Add this interface at the top of your file
+
 interface MenuItem {
   id: number;
+  menu_id: number;
   item_name: string;
   price: number | string;
   category: string;

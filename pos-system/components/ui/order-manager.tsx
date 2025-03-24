@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
+import { AddOrderModal } from "@/components/ui/add-order-modal";
 
 export type OrderItem = {
   id: number;
   item_name: string;
   price: number;
   quantity: number;
-  orderItemId?: string; // Add unique ID for each order item
+  menu_id: number;
+  orderItemId?: string; // Unique ID for each order item
 };
 
 interface OrderManagerProps {
@@ -21,35 +23,35 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const [orderItems, setOrderItems] = useState<OrderItem[]>(initialItems);
   const [subtotal, setSubtotal] = useState(0);
   const [tax, setTax] = useState(0);
+  const [tipAmount, setTipAmount] = useState(0); // Track tip amount
   const [total, setTotal] = useState(0);
   const [orderItemCounter, setOrderItemCounter] = useState(0);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-  // Calculate totals whenever order items change
+  // Calculate totals whenever order items or tip changes
   useEffect(() => {
     const newSubtotal = orderItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
     const newTax = newSubtotal * 0.0825; // 8.25% tax rate
-    const newTotal = newSubtotal + newTax;
+    const newTotal = newSubtotal + newTax + tipAmount; // Include tip in total calculation
 
     setSubtotal(newSubtotal);
     setTax(newTax);
     setTotal(newTotal);
-  }, [orderItems]);
+  }, [orderItems, tipAmount]); // Include tipAmount in the dependency array
 
   // Add item to order
   const addItem = (item: OrderItem) => {
     console.log("Adding item:", item); // Debug log
     
     setOrderItems((prevItems) => {
-      // Check if this exact item name already exists in the order
       const existingItemIndex = prevItems.findIndex(
         (orderItem) => orderItem.item_name === item.item_name
       );
       
       if (existingItemIndex >= 0) {
-        // If item exists, create a new array with the updated quantity
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
@@ -57,30 +59,28 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         };
         return updatedItems;
       } else {
-        // If item doesn't exist, add a new item with a unique ID
         const orderItemId = `order-item-${Date.now()}-${orderItemCounter}`;
         setOrderItemCounter(prev => prev + 1);
-        return [...prevItems, { ...item, quantity: 1, orderItemId }];
+        return [...prevItems, { ...item, quantity: 1, orderItemId, menu_id: item.menu_id }];
       }
     });
   };
 
-  // Remove item from order - now using orderItemId
+  // Remove item from order
   const removeItem = (orderItemId: string) => {
     setOrderItems((prevItems) => prevItems.filter((item) => item.orderItemId !== orderItemId));
   };
 
-  // Make addItem function available globally - only once
+  // Expose addItem function globally
   useEffect(() => {
     // @ts-ignore
     window.addToOrder = addItem;
     
-    // Cleanup function to remove the global reference when component unmounts
     return () => {
       // @ts-ignore
       window.addToOrder = undefined;
     };
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
   return (
     <div className="w-80 border-l border-[#e6ded5] bg-white flex flex-col">
@@ -137,6 +137,10 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
           <span className="text-[#5c4f42]">Tax</span>
           <span className="text-[#5c4f42]">${tax.toFixed(2)}</span>
         </div>
+        <div className="flex justify-between mb-2">
+          <span className="text-[#5c4f42]">Tip</span>
+          <span className="text-[#5c4f42]">${tipAmount.toFixed(2)}</span>
+        </div>
         <div className="flex justify-between font-bold mb-4">
           <span className="text-[#3c2f1f]">Total</span>
           <span className="text-[#3c2f1f]">${total.toFixed(2)}</span>
@@ -145,10 +149,24 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         <Button 
           className="w-full bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
           disabled={orderItems.length === 0}
+          onClick={() => setIsCheckoutOpen(true)}
         >
           Checkout
         </Button>
       </div>
+
+      
+      {/* AddOrderModal */}
+      <AddOrderModal 
+        isOpen={isCheckoutOpen} 
+        onClose={() => setIsCheckoutOpen(false)}
+        orderItems={orderItems} // Pass order items to modal
+        total={total} // Pass total price including tax and tip
+        onSuccess={() => {
+          setOrderItems([]); // Clear order on success
+          setIsCheckoutOpen(false);
+        }}
+      />
     </div>
   );
-} 
+}
