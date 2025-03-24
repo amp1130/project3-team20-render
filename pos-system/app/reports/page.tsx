@@ -18,6 +18,7 @@ import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
 import { query } from '@/lib/db-utils';
 import InventoryUsageChart from '@/components/ui/inventory-usage-chart';
+import { XReport } from '@/components/ui/xreport';
 
 interface Order {
   order_id: number;
