@@ -474,7 +474,10 @@ export default function ReportsPage() {
     <Card>
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Daily Sales by Item - {new Date(selectedDate).toLocaleDateString()}</CardTitle>
+        <CardTitle>
+          Daily Sales by Item - {new Date(selectedDate + "T00:00:00").toLocaleDateString()}
+        </CardTitle>
+
           <CardDescription>Itemized sales for the selected date</CardDescription>
         </div>
         <Button 
