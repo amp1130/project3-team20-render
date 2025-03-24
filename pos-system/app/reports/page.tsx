@@ -9,7 +9,7 @@ import { useManager } from "@/context/manager-context";
 import { AreaChart, BarChart, LineChart, PieChart } from "@/components/ui/charts";
 import { Loader2, TrendingUp, TrendingDown, Minus, AlertCircle, Download, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
 import { query } from '@/lib/db-utils';
 import InventoryUsageChart from '@/components/ui/inventory-usage-chart';
-import { XReport } from '@/components/ui/xreport';
+import XReport from '@/components/x-report';
 
 interface Order {
   order_id: number;
@@ -201,29 +201,6 @@ export default function ReportsPage() {
     );
   }, [filteredOrders]);
 
-  // Prepare hourly sales data
-  const salesByHourData = useMemo(() => {
-    if (!filteredOrders.length) return [];
-    
-    // Initialize hours array (0-23)
-    const hourlyData = Array.from({ length: 24 }, (_, i) => ({
-      hour: i.toString(),
-      sales: 0
-    }));
-    
-    // Aggregate sales by hour
-    filteredOrders.forEach(order => {
-      const orderDate = new Date(order.order_date);
-      const hour = orderDate.getHours();
-      const orderTotal = typeof order.total === 'number' 
-        ? order.total 
-        : parseFloat(order.total as string);
-      
-      hourlyData[hour].sales += orderTotal;
-    });
-    
-    return hourlyData;
-  }, [filteredOrders]);
 
   // Prepare tips distribution data
   const tipsDistributionData = useMemo(() => {
@@ -263,7 +240,6 @@ export default function ReportsPage() {
     // Create a new PDF document
     const doc = new jsPDF({
       compress: true,
-      optimization: true
     });
     
     // Add title and date - define the date variable here
@@ -377,7 +353,6 @@ export default function ReportsPage() {
       body: salesTableData,
       theme: 'grid',
       headStyles: { fillColor: [166, 124, 82] },
-      maxRows: 20 // Limit rows to prevent very large tables
     });
     
     // Handle finalY for chart captures with safe access
@@ -461,9 +436,7 @@ export default function ReportsPage() {
     } catch (error) {
       console.error("Error capturing charts:", error);
     }
-    
-    // Enable PDF internal compression
-    doc.internal.compress = true;
+
     
     // Save the PDF with a properly formatted filename
     doc.save(`sales-report-${timeWindow}-${date.replace(/\//g, '-')}.pdf`);
@@ -544,13 +517,9 @@ export default function ReportsPage() {
               <Download className="h-4 w-4" />
               <span>Download Report</span>
             </Button>
-            <Select
-              value={timeWindow}
-              onValueChange={(value) => setTimeWindow(value as TimeWindow)}
-              className="w-40"
-            >
-              <SelectTrigger id="timeWindow">
-                <SelectValue placeholder="Select Period" />
+            <Select value={timeWindow} onValueChange={(value) => setTimeWindow(value as TimeWindow)} className="w-40">
+              <SelectTrigger>
+                {timeWindow ? timeWindow : "Select Period"}
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="daily">Today</SelectItem>
@@ -560,6 +529,7 @@ export default function ReportsPage() {
                 <SelectItem value="total">All Time</SelectItem>
               </SelectContent>
             </Select>
+
           </div>
         </div>
 
@@ -625,7 +595,7 @@ export default function ReportsPage() {
           <Tabs defaultValue="daily-sales" className="mt-8">
             <TabsList className="mb-4">
               <TabsTrigger value="daily-sales">Daily Sales</TabsTrigger>
-              <TabsTrigger value="hourly-sales">Hourly Sales</TabsTrigger>
+              <TabsTrigger value="Xreport">X Report</TabsTrigger>
               <TabsTrigger value="tips">Tips Distribution</TabsTrigger>
               <TabsTrigger value="inventory">Inventory Usage</TabsTrigger>
             </TabsList>
@@ -663,31 +633,8 @@ export default function ReportsPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="hourly-sales">
-              <Card>
-                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2">
-                  <div>
-                    <CardTitle>Hourly Sales</CardTitle>
-                    <CardDescription>
-                      Sales performance by hour of day
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="h-[400px] pt-6">
-                  {!hasData ? (
-                    renderEmptyState()
-                  ) : (
-                    <BarChart 
-                      data={salesByHourData}
-                      categories={["sales"]}
-                      index="hour"
-                      valueFormatter={(value) => `$${formatNumber(value)}`}
-                      yAxisWidth={65}
-                      colors={["#a67c52"]}
-                    />
-                  )}
-                </CardContent>
-              </Card>
+            <TabsContent value="Xreport">
+              <XReport/>
             </TabsContent>
             
             <TabsContent value="tips" className="space-y-4">
