@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Check } from "lucide-react";
 import Image from "next/image";
 import { AddOrderModal } from "@/components/ui/add-order-modal";
 
@@ -12,7 +12,7 @@ export type OrderItem = {
   price: number;
   quantity: number;
   menu_id: number;
-  orderItemId?: string; // Unique ID for each order item
+  orderItemId?: string;
 };
 
 interface OrderManagerProps {
@@ -23,10 +23,15 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const [orderItems, setOrderItems] = useState<OrderItem[]>(initialItems);
   const [subtotal, setSubtotal] = useState(0);
   const [tax, setTax] = useState(0);
-  const [tipAmount, setTipAmount] = useState(0); // Track tip amount
+  const [tipAmount, setTipAmount] = useState(0);
   const [total, setTotal] = useState(0);
   const [orderItemCounter, setOrderItemCounter] = useState(0);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  
+  // Employee ID state
+  const [employeeId, setEmployeeId] = useState<string>('');
+  const [isEmployeeIdConfirmed, setIsEmployeeIdConfirmed] = useState(false);
+  const [employeeIdInput, setEmployeeIdInput] = useState('');
 
   // Calculate totals whenever order items or tip changes
   useEffect(() => {
@@ -34,17 +39,17 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-    const newTax = newSubtotal * 0.0825; // 8.25% tax rate
-    const newTotal = newSubtotal + newTax + tipAmount; // Include tip in total calculation
+    const newTax = newSubtotal * 0.0825;
+    const newTotal = newSubtotal + newTax + tipAmount;
 
     setSubtotal(newSubtotal);
     setTax(newTax);
     setTotal(newTotal);
-  }, [orderItems, tipAmount]); // Include tipAmount in the dependency array
+  }, [orderItems, tipAmount]);
 
   // Add item to order
   const addItem = (item: OrderItem) => {
-    console.log("Adding item:", item); // Debug log
+    console.log("Adding item:", item);
     
     setOrderItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
@@ -71,6 +76,21 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
     setOrderItems((prevItems) => prevItems.filter((item) => item.orderItemId !== orderItemId));
   };
 
+  // Handle employee ID confirmation
+  const handleEmployeeIdConfirm = () => {
+    if (employeeIdInput.trim() !== '') {
+      setEmployeeId(employeeIdInput);
+      setIsEmployeeIdConfirmed(true);
+    }
+  };
+
+  // Reset employee ID
+  const handleEmployeeIdReset = () => {
+    setEmployeeId('');
+    setIsEmployeeIdConfirmed(false);
+    setEmployeeIdInput('');
+  };
+
   // Expose addItem function globally
   useEffect(() => {
     // @ts-ignore
@@ -84,15 +104,47 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
 
   return (
     <div className="w-80 border-l border-[#e6ded5] bg-white flex flex-col">
+      {/* Employee ID Section - Added at the top */}
+      <div className="p-4 border-b border-[#e6ded5]">
+        <div className="flex items-center space-x-2">
+          {!isEmployeeIdConfirmed ? (
+            <>
+              <input 
+                type="text" 
+                placeholder="Enter Employee ID" 
+                value={employeeIdInput}
+                onChange={(e) => setEmployeeIdInput(e.target.value)}
+                className="flex-1 p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#5c4f42]"
+              />
+              <button 
+                onClick={handleEmployeeIdConfirm}
+                className="bg-[#5c4f42] text-white p-2 rounded-md hover:bg-[#3c2f1f]"
+              >
+                <Check className="h-5 w-5" />
+              </button>
+            </>
+          ) : (
+            <div className="flex-1 flex justify-between items-center">
+              <span className="text-[#5c4f42] font-medium">Employee ID: {employeeId}</span>
+              <button 
+                onClick={handleEmployeeIdReset}
+                className="text-[#a67c52] hover:text-[#8c6542]"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <h2 className="text-xl font-bold text-[#5c4f42] p-4 pb-2">Current Order</h2>
       
-      {/* Order Items List - Scrollable */}
+      {/* Rest of the component remains the same */}
       <div className="flex-1 overflow-y-auto p-4 pt-2">
         <div className="space-y-3">
           {orderItems.length > 0 ? (
             orderItems.map((item) => (
               <div key={item.orderItemId} className="flex items-start bg-[#f8f5f2] p-2 rounded-md">
-                {/* Item Image */}
                 <div className="flex-shrink-0 w-10 h-10 bg-white rounded-md mr-2 flex items-center justify-center">
                   <Image
                     src="/boba.png"
@@ -103,7 +155,6 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
                   />
                 </div>
                 
-                {/* Item Details */}
                 <div className="flex-1">
                   <div className="flex justify-between">
                     <span className="font-medium text-[#3c2f1f] text-sm">{item.item_name}</span>
@@ -127,7 +178,6 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         </div>
       </div>
       
-      {/* Order Summary - Fixed at bottom */}
       <div className="p-4 border-t border-[#e6ded5]">
         <div className="flex justify-between mb-2">
           <span className="text-[#5c4f42]">Subtotal</span>
@@ -148,22 +198,21 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         
         <Button 
           className="w-full bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-          disabled={orderItems.length === 0}
+          disabled={orderItems.length === 0 || !isEmployeeIdConfirmed}
           onClick={() => setIsCheckoutOpen(true)}
         >
           Checkout
         </Button>
       </div>
 
-      
-      {/* AddOrderModal */}
       <AddOrderModal 
         isOpen={isCheckoutOpen} 
         onClose={() => setIsCheckoutOpen(false)}
-        orderItems={orderItems} // Pass order items to modal
-        total={total} // Pass total price including tax and tip
+        orderItems={orderItems}
+        total={total}
+        employeeId={employeeId}
         onSuccess={() => {
-          setOrderItems([]); // Clear order on success
+          setOrderItems([]); 
           setIsCheckoutOpen(false);
         }}
       />

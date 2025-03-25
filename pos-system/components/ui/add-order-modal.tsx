@@ -16,16 +16,24 @@ interface OrderItem {
 interface AddOrderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
   orderItems: OrderItem[];
   total: number;
+  employeeId: string; // Keep this line
+  onSuccess: () => void;
 }
 
-export function AddOrderModal({ isOpen, onClose, onSuccess, orderItems, total }: AddOrderModalProps) {
+export function AddOrderModal({ 
+  isOpen, 
+  onClose, 
+  onSuccess, 
+  orderItems, 
+  total, 
+  employeeId // Add this parameter to destructuring
+}: AddOrderModalProps) {
   const [tipAmount, setTipAmount] = useState(0);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -92,7 +100,7 @@ export function AddOrderModal({ isOpen, onClose, onSuccess, orderItems, total }:
         },
         body: JSON.stringify({
           order_id: Date.now(),
-          employee_id: 1,
+          employee_id: employeeId, // Use the dynamic employee ID here
           total_amount: total + tipAmount,
           tip_amount: tipAmount,
           items: orderItems.map((item) => ({
@@ -111,7 +119,7 @@ export function AddOrderModal({ isOpen, onClose, onSuccess, orderItems, total }:
 
       resetForm();
       onSuccess();
-      router.push("/order-success"); // Redirect to order success page
+      router.push("/order-success");
     } catch (error) {
       console.error("Error submitting order:", error);
       setError(error instanceof Error ? error.message : "An unknown error occurred");
@@ -133,7 +141,6 @@ export function AddOrderModal({ isOpen, onClose, onSuccess, orderItems, total }:
 
         <ul className="mb-4">
           {orderItems.map((item) => (
-            // Gives each ordered item a temporary unique key
             <li key={`${item.menu_id}-${item.quantity}`} className="flex justify-between text-sm">
               <span>
                 {item.item_name} x {item.quantity}
@@ -156,16 +163,15 @@ export function AddOrderModal({ isOpen, onClose, onSuccess, orderItems, total }:
             ref={firstInputRef}
             type="number"
             id="tip-amount"
-            value={tipAmount === 0 ? "" : tipAmount} // Convert 0 to empty string to prevent NaN
+            value={tipAmount === 0 ? "" : tipAmount}
             onChange={(e) => {
               const value = e.target.value;
-              setTipAmount(value === "" ? 0 : parseFloat(value)); // Handle empty input properly
+              setTipAmount(value === "" ? 0 : parseFloat(value));
             }}
             className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
             placeholder="Enter tip amount"
             step="0.01"
           />
-
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -175,7 +181,6 @@ export function AddOrderModal({ isOpen, onClose, onSuccess, orderItems, total }:
             type="button"
             variant="outline"
             onClick={() => {
-              // Clears checkout form once submitted
               resetForm();
               onClose();
             }}
