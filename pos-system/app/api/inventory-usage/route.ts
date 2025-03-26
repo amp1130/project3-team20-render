@@ -15,19 +15,19 @@ export async function GET(request: NextRequest) {
   // Get the date from the URL
   const { searchParams } = new URL(request.url);
   const date = searchParams.get('date');
-
   if (!date) {
     return NextResponse.json(
       { message: 'Date parameter is required' },
       { status: 400 }
     );
   }
-
+  
+  // Adjust the date to match your database time zone
+  const correctedDate = new Date(date + "T00:00:00-06:00") // Adjust offset if needed
+  
   try {
-    // Connect to the database
     const client = await pool.connect();
     try {
-      // SQL query adapted from the Java version
       const sql = `
         SELECT i.ingredient, SUM(eoi.quantity) AS total_usage 
         FROM Orders o 
@@ -38,19 +38,16 @@ export async function GET(request: NextRequest) {
         GROUP BY i.ingredient 
         ORDER BY i.ingredient
       `;
-      
-      // Execute the query with the date parameter
-      const result = await client.query(sql, [date]);
-      
-      // Format the results for the frontend
+  
+      const result = await client.query(sql, [correctedDate.toISOString().split("T")[0]]); // Use adjusted date
+  
       const formattedResults = result.rows.map(item => ({
         ingredient: item.ingredient,
         usage: parseInt(item.total_usage)
       }));
-      
+  
       return NextResponse.json(formattedResults);
     } finally {
-      // Release the client back to the pool
       client.release();
     }
   } catch (error: any) {
@@ -60,4 +57,5 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+  
 }

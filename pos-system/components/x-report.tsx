@@ -73,21 +73,48 @@ const XReport: React.FC = () => {
     fetchXReport();
   }, []);
 
+  // Function to generate zero data when Z-Report is run
+  const generateZeroData = (originalData: XReportData): XReportData => {
+    if (!originalData.zReportRun) return originalData;
+
+    return {
+      ...originalData,
+      ordersByHour: originalData.ordersByHour.map(item => ({ ...item, value: 0 })),
+      salesByHour: originalData.salesByHour.map(item => ({ ...item, value: 0 })),
+      employeeOrders: originalData.employeeOrders.map(employee => ({
+        ...employee,
+        hourlyOrders: Object.fromEntries(
+          Object.keys(employee.hourlyOrders).map(hour => [hour, 0])
+        ),
+        total: 0
+      })),
+      tipsData: originalData.tipsData.map(item => ({ ...item, value: 0 })),
+      summary: {
+        totalOrders: 0,
+        totalSales: 0,
+        totalTips: 0
+      }
+    };
+  };
+
   if (loading) return <div>Loading X Report...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!reportData) return <div>No report data available</div>;
+
+  // Apply zero data transformation if Z-Report is run
+  const processedReportData = generateZeroData(reportData);
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>
-          {reportData.zReportRun
-            ? `X Report (After Z-Report) - ${reportData.date}`
-            : `X Report - ${reportData.date}`}
+          {processedReportData.zReportRun
+            ? `X Report (After Z-Report) - ${processedReportData.date}`
+            : `X Report - ${processedReportData.date}`}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {reportData.zReportRun && (
+        {processedReportData.zReportRun && (
           <div className="bg-blue-100 border border-blue-300 p-4 mb-4 rounded">
             <p className="text-blue-800 font-bold">
               NOTICE: Z-Report has already been run for today.
@@ -100,7 +127,7 @@ const XReport: React.FC = () => {
         <div className="mb-6">
           <h2 className="text-xl font-bold mb-4">Number of Orders Per Hour</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={reportData.ordersByHour}>
+            <BarChart data={processedReportData.ordersByHour}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="hour" />
               <YAxis width={48} />
@@ -115,7 +142,7 @@ const XReport: React.FC = () => {
         <div className="mb-6">
           <h2 className="text-xl font-bold mb-4">Sales Amount Per Hour ($)</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={reportData.salesByHour}>
+            <BarChart data={processedReportData.salesByHour}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="hour" />
               <YAxis width={48} />
@@ -127,14 +154,14 @@ const XReport: React.FC = () => {
         </div>
 
         {/* Employee Orders Table */}
-        {reportData.employeeOrders.length > 0 ? (
+        {processedReportData.employeeOrders.length > 0 ? (
         <div className="mb-6">
             <h2 className="text-xl font-bold mb-4">Orders Processed by Employee Per Hour</h2>
             <Table>
             <TableHeader>
                 <TableRow className="bg-[#e6ded5] text-[#b79c85]">
                 <TableHead className="font-bold">Employee</TableHead>
-                {Object.keys(reportData.employeeOrders[0].hourlyOrders)
+                {Object.keys(processedReportData.employeeOrders[0].hourlyOrders)
                     .filter((hour) => {
                     const hourNum = parseInt(hour, 10);
                     return hourNum >= 10 && hourNum <= 22;
@@ -147,7 +174,7 @@ const XReport: React.FC = () => {
             </TableHeader>
 
             <TableBody>
-                {reportData.employeeOrders.map((employee, index) => (
+                {processedReportData.employeeOrders.map((employee, index) => (
                 <TableRow key={index}>
                     <TableCell>{employee.employee}</TableCell>
                     {Object.entries(employee.hourlyOrders)
@@ -168,23 +195,22 @@ const XReport: React.FC = () => {
         <p>No employee order data available.</p>
         )}
 
-
         {/* Tips Per Hour Table */}
-        {reportData.tipsData.length > 0 ? (
+        {processedReportData.tipsData.length > 0 ? (
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-4">Tips Received Per Hour</h2>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Hour</TableHead>
-                  <TableHead>Tips Amount ($)</TableHead>
+                <TableRow className="bg-[#e6ded5] text-[#b79c85]">
+                  <TableHead className="text-center">Hour</TableHead>
+                  <TableHead className="text-center">Tips Amount ($)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {reportData.tipsData.map((tip, index) => (
+                {processedReportData.tipsData.map((tip, index) => (
                   <TableRow key={index}>
-                    <TableCell>{tip.hour}</TableCell>
-                    <TableCell>${tip.value.toFixed(2)}</TableCell>
+                    <TableCell className="text-center">{tip.hour}</TableCell>
+                    <TableCell className="text-center">${tip.value.toFixed(2)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -199,11 +225,11 @@ const XReport: React.FC = () => {
           <h2 className="text-xl font-bold mb-4">Daily Summary</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>Total Orders:</div>
-            <div>{reportData.summary.totalOrders}</div>
+            <div>{processedReportData.summary.totalOrders}</div>
             <div>Total Sales:</div>
-            <div>${reportData.summary.totalSales?.toFixed(2) || "0.00"}</div>
+            <div>${processedReportData.summary.totalSales?.toFixed(2) || "0.00"}</div>
             <div>Total Tips:</div>
-            <div>${reportData.summary.totalTips?.toFixed(2) || "0.00"}</div>
+            <div>${processedReportData.summary.totalTips?.toFixed(2) || "0.00"}</div>
           </div>
         </div>
       </CardContent>

@@ -19,6 +19,7 @@ import html2canvas from "html2canvas";
 import { query } from '@/lib/db-utils';
 import InventoryUsageChart from '@/components/ui/inventory-usage-chart';
 import XReport from '@/components/x-report';
+import ZReport from '@/components/ui/z-report';
 
 interface Order {
   order_id: number;
@@ -596,6 +597,7 @@ export default function ReportsPage() {
             <TabsList className="mb-4">
               <TabsTrigger value="daily-sales">Daily Sales</TabsTrigger>
               <TabsTrigger value="Xreport">X Report</TabsTrigger>
+              <TabsTrigger value="Zreport">Z Report</TabsTrigger>
               <TabsTrigger value="tips">Tips Distribution</TabsTrigger>
               <TabsTrigger value="inventory">Inventory Usage</TabsTrigger>
             </TabsList>
@@ -635,6 +637,9 @@ export default function ReportsPage() {
 
             <TabsContent value="Xreport">
               <XReport/>
+            </TabsContent>
+            <TabsContent value="Zreport">
+              <ZReport/>
             </TabsContent>
             
             <TabsContent value="tips" className="space-y-4">

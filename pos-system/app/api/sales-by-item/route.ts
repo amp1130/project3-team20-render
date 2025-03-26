@@ -12,53 +12,56 @@ const pool = new Pool({
 });
 
 export async function GET(request: NextRequest) {
-    // Get the date from the URL
-    const { searchParams } = new URL(request.url);
-    const date = searchParams.get('date');
-    if (!date) {
+  // Get the date from the URL
+  const { searchParams } = new URL(request.url);
+  const dateParam = searchParams.get('date');
+  
+  if (!dateParam) {
       return NextResponse.json(
-        { message: 'Date parameter is required' },
-        { status: 400 }
+          { message: 'Date parameter is required' },
+          { status: 400 }
       );
-    }
+  }
 
   try {
-    // Connect to the database
-    const client = await pool.connect();
+      // Ensure the date is treated as UTC (Prevents Time Zone Shift Issues)
+      const utcDate = new Date(dateParam + 'T00:00:00Z').toISOString().split('T')[0];
 
-    try {
-      // SQL query similar to the Java version, but adapted for PostgreSQL syntax
-      const sql = `
-        SELECT mi.item_name, SUM(eoi.quantity) AS quantity, mi.price
-        FROM Orders o
-        JOIN EachOrderedItem eoi ON o.order_id = eoi.order_id
-        JOIN MenuItems mi ON eoi.menu_id = mi.menu_id
-        WHERE DATE(o.order_date) = $1
-        GROUP BY mi.item_name, mi.price
-        ORDER BY quantity DESC
-      `;
-    
+      // Connect to the database
+      const client = await pool.connect();
 
-      // Execute the query with the date parameter
-      const result = await client.query(sql, [date]);
+      try {
+          const sql = `
+              SELECT mi.item_name, SUM(eoi.quantity) AS quantity, mi.price
+              FROM Orders o
+              JOIN EachOrderedItem eoi ON o.order_id = eoi.order_id
+              JOIN MenuItems mi ON eoi.menu_id = mi.menu_id
+              WHERE DATE(o.order_date) = $1
+              GROUP BY mi.item_name, mi.price
+              ORDER BY quantity DESC
+          `;
 
-      // Format the results for the frontend
-      const formattedResults = result.rows.map(item => ({
-        item_name: item.item_name,
-        quantity: parseInt(item.quantity),
-        price: parseFloat(item.price)
-      }));
+          // Execute the query using the forced UTC date
+          const result = await client.query(sql, [utcDate]);
 
-      return NextResponse.json(formattedResults);
-    } finally {
-      // Release the client back to the pool
-      client.release();
-    }
+          // Format the results for the frontend
+          const formattedResults = result.rows.map(item => ({
+              item_name: item.item_name,
+              quantity: parseInt(item.quantity),
+              price: parseFloat(item.price)
+          }));
+
+          return NextResponse.json(formattedResults);
+      } finally {
+          // Release the client back to the pool
+          client.release();
+      }
   } catch (error: any) {
-    console.error("Error fetching order items:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch order items1" },
-      { status: 500 }
-    );
+      console.error("Error fetching order items:", error);
+      return NextResponse.json(
+          { error: "Failed to fetch order items" },
+          { status: 500 }
+      );
   }
 }
+

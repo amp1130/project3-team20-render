@@ -19,7 +19,7 @@ interface EmployeeOrderData {
 export async function GET(request: NextRequest) {
   try {
     const client = await pool.connect();
-    const currentDate = new Date().toISOString().split("T")[0];
+    const currentDate = new Date().toLocaleDateString("en-CA"); // "YYYY-MM-DD"
 
     // Check if Z-Report has been run
     const zReportCheck = await client.query(
