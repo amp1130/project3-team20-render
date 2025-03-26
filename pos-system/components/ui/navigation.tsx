@@ -2,7 +2,7 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, ShoppingCart, BarChart2, Package, X, CheckCircle } from "lucide-react";
+import { ArrowLeft, User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { WeatherDisplay } from "./weather-display";
@@ -134,6 +134,14 @@ export function Navigation() {
               >
                 <Package className="h-4 w-4" />
                 Inventory
+              </Button>
+              <Button
+                variant="outline"
+                className="border-[#d4c8bc] bg-transparent text-[#5c4f42]"
+                onClick={() => router.push('/employees')}
+              >
+                <Users className="h-4 w-4" />
+                Employees
               </Button>
             </div>
           )}
