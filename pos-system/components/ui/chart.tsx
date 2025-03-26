@@ -65,10 +65,10 @@ interface ChartTooltipContentProps {
   payload?: Array<{
     name: string
     value: number
-    payload: Record<string, any>
+    payload: Record<string, unknown>
   }>
   label?: string
-  formatter?: (value: number, name: string, props: any) => [string, string]
+  formatter?: (value: number, name: string, props: unknown) => [string, string]
   labelFormatter?: (label: string) => string
   className?: string
   indicator?: "line" | "dot"
@@ -141,7 +141,7 @@ export function ChartTooltipContent({
   )
 }
 
-export function ChartTooltip(props: TooltipProps<any, any>) {
+export function ChartTooltip(props: TooltipProps<number, string>) {
   return <ChartTooltipContent {...props} />
 }
 
