@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as React from "react";
 import { 
@@ -45,7 +46,6 @@ const DAYLIGHT_COLORS = [
   "#e6ded5", // Beige
 ];
 
-const CHART_BACKGROUND = "hsl(var(--card))"; // Card background from theme
 
 export function BarChart({ data, index, categories, colors = DAYLIGHT_COLORS, valueFormatter, yAxisWidth = 40 }: ChartProps) {
   return (

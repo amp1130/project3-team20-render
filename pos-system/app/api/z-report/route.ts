@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {NextResponse } from 'next/server';
 import { Pool } from "pg";
 
 const pool = new Pool({
@@ -7,10 +7,13 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || "5432"),
-  ssl: process.env.NODE_ENV === "production",
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
-export async function GET(request: NextRequest) {
+
+export async function GET() {
   const client = await pool.connect();
 
   try {

@@ -3,13 +3,16 @@ import { Pool } from "pg";
 
 // Create a connection pool
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: parseInt(process.env.DB_PORT || "5432"),
-  ssl: process.env.NODE_ENV === "production",
-});
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: parseInt(process.env.DB_PORT || "5432"),
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
+  
 
 export async function GET(request: NextRequest) {
   // Get the date from the URL
@@ -56,12 +59,16 @@ export async function GET(request: NextRequest) {
           // Release the client back to the pool
           client.release();
       }
-  } catch (error: any) {
-      console.error("Error fetching order items:", error);
-      return NextResponse.json(
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error fetching order items:", error.message);
+        } else {
+          console.error("An unknown error occurred", error);
+        }
+        return NextResponse.json(
           { error: "Failed to fetch order items" },
           { status: 500 }
-      );
-  }
+        );
+    }
 }
 

@@ -8,8 +8,11 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || "5432"),
-  ssl: process.env.NODE_ENV === "production",
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
+
 
 export async function GET() {
   try {

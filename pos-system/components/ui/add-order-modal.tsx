@@ -115,7 +115,6 @@ export function AddOrderModal({
         throw new Error("Failed to submit order");
       }
 
-      const data = await response.json();
 
       resetForm();
       onSuccess();

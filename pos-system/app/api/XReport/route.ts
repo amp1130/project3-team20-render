@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { Pool } from "pg";
 
 const pool = new Pool({
@@ -7,8 +7,11 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || "5432"),
-  ssl: process.env.NODE_ENV === "production",
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
+
 
 interface EmployeeOrderData {
   employee: string;
@@ -16,7 +19,7 @@ interface EmployeeOrderData {
   total: number;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const client = await pool.connect();
     const currentDate = new Date().toLocaleDateString("en-CA"); // "YYYY-MM-DD"

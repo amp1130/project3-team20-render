@@ -16,6 +16,7 @@ interface Ingredient {
   ingredient_name: string;
   current_amount: number;
   critical_amount: number;
+  restock_count: number;
 }
 
 export default function InventoryPage() {

@@ -66,6 +66,7 @@ const getProductEmojis = (productName: string): string => {
 };
 
 export function MenuItemCard({ item }: MenuItemCardProps) {
+  // @ts-ignore
   const [isHovered, setIsHovered] = useState(false);
   
   const handleAddToOrder = () => {

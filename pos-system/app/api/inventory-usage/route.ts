@@ -8,8 +8,11 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || "5432"),
-  ssl: process.env.NODE_ENV === "production",
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
+
 
 export async function GET(request: NextRequest) {
   // Get the date from the URL
@@ -50,8 +53,12 @@ export async function GET(request: NextRequest) {
     } finally {
       client.release();
     }
-  } catch (error: any) {
-    console.error("Error fetching inventory usage:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching inventory usage:", error.message);
+    } else {
+      console.error("An unknown error occurred", error);
+    }
     return NextResponse.json(
       { error: "Failed to fetch inventory usage data" },
       { status: 500 }
