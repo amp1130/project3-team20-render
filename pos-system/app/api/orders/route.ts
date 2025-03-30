@@ -42,7 +42,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
     
-    const order_date = new Date();
+    const order_date = new Date().toLocaleString("en-US", {
+      timeZone: "America/Chicago",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: true
+    });
+    console.log(order_date); 
     
     // Fetch last order ID
     const result = await client.query("SELECT MAX(last_order_id) AS last_order_id FROM OrderIDTracker");
