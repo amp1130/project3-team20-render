@@ -66,13 +66,13 @@ export default function EmployeesPage() {
                         </Button>
                         <Button 
                             className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-                            onClick={() => setIsUpdateModalOpen(true)}
+                            onClick={() => setIsDeleteModalOpen(true)}
                         >
                             Delete Employee
                         </Button>
                         <Button 
                             className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-                            onClick={() => setIsDeleteModalOpen(true)}
+                            onClick={() => setIsUpdateModalOpen(true)}
                         >
                             Update Employee
                         </Button>
@@ -85,6 +85,22 @@ export default function EmployeesPage() {
                         setIsAddModalOpen(false);
                         fetchEmployees();
                     }}
+                />
+                <DeleteEmployeeModal 
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onSuccess={() => {
+                        setIsDeleteModalOpen(false);
+                        fetchEmployees();
+                }}
+                />
+                <UpdateEmployeeModal 
+                    isOpen={isUpdateModalOpen}
+                    onClose={() => setIsUpdateModalOpen(false)}
+                    onSuccess={() => {
+                        setIsUpdateModalOpen(false);
+                        fetchEmployees();
+                }}
                 />
             </div>
         </>
