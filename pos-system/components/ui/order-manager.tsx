@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -23,7 +24,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const [orderItems, setOrderItems] = useState<OrderItem[]>(initialItems);
   const [subtotal, setSubtotal] = useState(0);
   const [tax, setTax] = useState(0);
-  const [tipAmount, setTipAmount] = useState(0);
+  const [tipAmount] = useState(0);
   const [total, setTotal] = useState(0);
   const [orderItemCounter, setOrderItemCounter] = useState(0);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);

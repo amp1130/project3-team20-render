@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Search, Mic } from "lucide-react";
 import { useState, useRef } from "react";

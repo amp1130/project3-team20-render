@@ -2,7 +2,7 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users } from "lucide-react";
+import {User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { WeatherDisplay } from "./weather-display";

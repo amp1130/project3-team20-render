@@ -78,7 +78,6 @@ export function ChartTooltipContent({
   active,
   payload,
   label,
-  formatter,
   labelFormatter,
   className,
   indicator = "line",
@@ -142,8 +141,9 @@ export function ChartTooltipContent({
 }
 
 export function ChartTooltip(props: TooltipProps<number, string>) {
-  return <ChartTooltipContent {...props} />
+  return <ChartTooltipContent {...(props as unknown as ChartTooltipContentProps)} />
 }
+
 
 interface ChartLegendContentProps {
   payload?: Array<{
@@ -211,5 +211,5 @@ export function ChartLegendContent({
 }
 
 export function ChartLegend(props: LegendProps) {
-  return <ChartLegendContent {...props} />
-} 
+  return <ChartLegendContent {...(props as ChartLegendContentProps)} />
+}

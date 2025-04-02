@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Navigation } from "@/components/ui/navigation";
 import { useEffect, useState, useMemo } from "react";
@@ -6,19 +7,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { useManager } from "@/context/manager-context";
-import { AreaChart, BarChart, LineChart, PieChart } from "@/components/ui/charts";
-import { Loader2, TrendingUp, TrendingDown, Minus, AlertCircle, Download, Calendar } from "lucide-react";
+import { AreaChart, PieChart } from "@/components/ui/charts";
+import { Loader2, AlertCircle, Download, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
-import { query } from '@/lib/db-utils';
 import InventoryUsageChart from '@/components/ui/inventory-usage-chart';
 import XReport from '@/components/x-report';
+import ZReport from '@/components/ui/z-report';
 
 interface Order {
   order_id: number;
@@ -332,8 +333,12 @@ export default function ReportsPage() {
     let finalY = 0;
     try {
       finalY = (doc as any).lastAutoTable?.finalY || 50;
-    } catch (error) {
-      console.error("Error accessing lastAutoTable.finalY:", error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error accessing lastAutoTable.finalY:", error.message);
+      } else {
+        console.error("An unknown error occurred", error);
+      }
       finalY = 50; // Fallback position
     }
     
@@ -358,8 +363,12 @@ export default function ReportsPage() {
     // Handle finalY for chart captures with safe access
     try {
       finalY = (doc as any).lastAutoTable?.finalY || (finalY + 30);
-    } catch (error) {
-      console.error("Error accessing lastAutoTable.finalY for charts:", error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error accessing lastAutoTable.finalY for charts:", error.message);
+      } else {
+        console.error("An unknown error occurred", error);
+      }
       finalY += 30; // Just move down a bit from the previous position
     }
     
@@ -596,6 +605,7 @@ export default function ReportsPage() {
             <TabsList className="mb-4">
               <TabsTrigger value="daily-sales">Daily Sales</TabsTrigger>
               <TabsTrigger value="Xreport">X Report</TabsTrigger>
+              <TabsTrigger value="Zreport">Z Report</TabsTrigger>
               <TabsTrigger value="tips">Tips Distribution</TabsTrigger>
               <TabsTrigger value="inventory">Inventory Usage</TabsTrigger>
             </TabsList>
@@ -635,6 +645,9 @@ export default function ReportsPage() {
 
             <TabsContent value="Xreport">
               <XReport/>
+            </TabsContent>
+            <TabsContent value="Zreport">
+              <ZReport/>
             </TabsContent>
             
             <TabsContent value="tips" className="space-y-4">
