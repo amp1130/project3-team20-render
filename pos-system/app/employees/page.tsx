@@ -6,12 +6,18 @@ import { useManager } from "@/context/manager-context";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { EmployeeTable, Employee } from "@/components/ui/employee-table";
+import { AddEmployeeModal } from "@/components/ui/add-employee-modal";
+import { DeleteEmployeeModal } from "@/components/ui/delete-employee-modal";
+import { UpdateEmployeeModal } from "@/components/ui/update-employee-modal";
 
 export default function EmployeesPage() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const { isManagerMode, isInitialized } = useManager();
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
     const fetchEmployees = async () => {
         try {
@@ -54,24 +60,32 @@ export default function EmployeesPage() {
                     <div className="flex gap-2">
                         <Button 
                         className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-                        onClick={() => router.push("/")}
+                        onClick={() => setIsAddModalOpen(true)}
                         >
                             Add Employee
                         </Button>
                         <Button 
                             className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-                            onClick={() => router.push("/")}
+                            onClick={() => setIsUpdateModalOpen(true)}
                         >
                             Delete Employee
                         </Button>
                         <Button 
                             className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-                            onClick={() => router.push("/")}
+                            onClick={() => setIsDeleteModalOpen(true)}
                         >
                             Update Employee
                         </Button>
                     </div>
                 </div>
+                <AddEmployeeModal 
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onSuccess={() => {
+                        setIsAddModalOpen(false);
+                        fetchEmployees();
+                    }}
+                />
             </div>
         </>
     );
