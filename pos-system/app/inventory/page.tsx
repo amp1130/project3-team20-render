@@ -10,6 +10,8 @@ import { InventoryTable } from "@/components/ui/inventory-table";
 import { AddIngredientModal } from "@/components/ui/add-ingredient-modal";
 import { DeleteIngredientModal } from "@/components/ui/delete-ingredient-modal";
 import { RestockIngredientModal } from "@/components/ui/restock-ingredient-modal";
+import { AddMenuItemModal } from "@/components/ui/add-menu-item";
+import { DeleteMenuItemModal } from "@/components/ui/delete-menu-item";
 
 interface Ingredient {
   ingredient_id: number;
@@ -27,6 +29,8 @@ export default function InventoryPage() {
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
   const router = useRouter();
   const { isManagerMode, isInitialized } = useManager();
+  const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
+  const [isDeleteMenuItemModalOpen, setIsDeleteMenuItemModalOpen] = useState(false);
 
   // Fetch ingredients data
   const fetchIngredients = async () => {
@@ -86,6 +90,21 @@ export default function InventoryPage() {
               <RefreshCw className="h-4 w-4 mr-1" />
               Restock Ingredient
             </Button>
+            <Button 
+              onClick={() => setIsAddMenuItemModalOpen(true)}
+              className="bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Menu Item
+            </Button>
+            <Button 
+              onClick={() => setIsDeleteMenuItemModalOpen(true)}
+              variant="outline"
+              className="border-[#d4c8bc] text-[#5c4f42] hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete Menu Item
+            </Button>
           </div>
         </div>
 
@@ -121,7 +140,25 @@ export default function InventoryPage() {
           }}
           ingredients={ingredients}
         />
+
+        <AddMenuItemModal 
+          isOpen={isAddMenuItemModalOpen}
+          onClose={() => setIsAddMenuItemModalOpen(false)}
+          onSuccess={() => {
+            setIsAddMenuItemModalOpen(false);
+            fetchIngredients();
+          }}
+        />
+        
+        <DeleteMenuItemModal 
+          isOpen={isDeleteMenuItemModalOpen}
+          onClose={() => setIsDeleteMenuItemModalOpen(false)}
+          onSuccess={() => {
+            setIsDeleteMenuItemModalOpen(false);
+            fetchIngredients();
+          }}
+        />
       </div>
     </>
   );
-} 
+}
