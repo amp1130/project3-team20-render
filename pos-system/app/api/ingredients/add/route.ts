@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       // Insert the new ingredient with correct column names
       const insertQuery = `
         INSERT INTO ingredients (ingredient_id, ingredient, current_count, critical_count, restock_count)
-        VALUES ($1, $2, $3, $4, 0)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *
       `;
       
@@ -79,7 +79,8 @@ export async function POST(request: Request) {
         ingredient_id,
         ingredient_name,
         current_amount,
-        critical_amount
+        critical_amount,
+        0 // Default restock_count value
       ]);
       
       // Return the newly created ingredient

@@ -8,9 +8,10 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT || "5432"),
-    ssl: process.env.NODE_ENV === "production",
-});
-
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
 // Function to determine the category of the new menu item
 function assignCategoryToItem(itemName: string) {
     // Simple assignment based on common keywords
@@ -64,8 +65,8 @@ export async function POST(request: Request) {
             
             // Insert the new menu item (with menu_id included)
             const insertQuery = `
-                INSERT INTO MenuItems (menu_id, item_name, price, description) 
-                VALUES ($1, $2, $3, $4) 
+                INSERT INTO MenuItems (menu_id, item_name, price) 
+                VALUES ($1, $2, $3) 
                 RETURNING *
             `;
             
@@ -73,7 +74,6 @@ export async function POST(request: Request) {
                 menu_id,
                 item_name, 
                 price,
-                description || null
             ]);
             
             // Get the inserted item with its ID
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
                 for (const ingredientId of ingredientIds) {
                     await client.query(
                         'INSERT INTO MenuToIngredient (menu_id, ingredient_id) VALUES ($1, $2)',
-                        [menu_id, parseInt(ingredientId)]
+                        [newItem.item_id, parseInt(ingredientId)]
                     );
                 }
             }

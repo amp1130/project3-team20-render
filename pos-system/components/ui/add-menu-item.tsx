@@ -204,10 +204,10 @@ export function AddMenuItemModal({ isOpen, onClose, onSuccess }: AddMenuItemModa
                                 className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
                             >
                                 <option value="">Select a category</option>
-                                <option value="Entrees">Entrees</option>
-                                <option value="Sides">Sides</option>
-                                <option value="Drinks">Drinks</option>
-                                <option value="Desserts">Desserts</option>
+                                <option value="Milk Tea">Milk Tea</option>
+                                <option value="Fruit Tea">Fruit Tea</option>
+                                <option value="Fresh Milk">Fresh Milk</option>
+                                <option value="Blended">Blended</option>
                             </select>
                         </div>
                         
