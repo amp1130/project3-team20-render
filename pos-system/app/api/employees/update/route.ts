@@ -1,3 +1,4 @@
+import e from "express";
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
 
@@ -14,52 +15,36 @@ const pool = new Pool({
 });
 
 
-export async function DELETE(request: Request) {
+export async function POST(request: Request) {
   try {
-    const { employee_id } = await request.json();
-    
-    // Validate required fields
-    if (!employee_id) {
-      return NextResponse.json(
-        { error: "Employee ID is required" },
-        { status: 400 }
-      );
-    }
+    const { employee_id, name, job_title, hourly_wage, hours } = await request.json();
 
     // Connect to the database
     const client = await pool.connect();
     
     try {
-      // Check if employee exists
-      const checkResult = await client.query(
-        'SELECT * FROM employees WHERE employee_id = $1',
-        [employee_id]
-      );
-      
-      if (checkResult.rows.length === 0) {
-        return NextResponse.json(
-          { error: "employee not found" },
-          { status: 404 }
-        );
-      }
-      
-      // Delete the employee
-      const deleteQuery = 'DELETE FROM employees WHERE employee_id = $1 RETURNING *';
-      const result = await client.query(deleteQuery, [employee_id]);
+      // Update the employee
+      const updateQuery = `
+        UPDATE employees
+        SET name = $2, job_title = $3, hourly_wage = $4, hours = $5
+        WHERE employee_id = $1
+        RETURNING *;
+      `;
+      const result = await client.query(updateQuery, [employee_id, name, job_title, hourly_wage, hours]);
       
       // Return success message
       return NextResponse.json({ 
-        message: "Employee deleted successfully",
-        deleted: result.rows[0]
+        message: "Employee updated successfully",
+        employee: result.rows[0]
       });
     } finally {
       // Release the client back to the pool
       client.release();
     }
   } catch (error) {
-    console.error("Error deleting employee:", error);
+    console.error("Error updating employee:", error);
     return NextResponse.json(
-      { error: "Failed to delete employee" },
+      { error: "Failed to update employee" },
       { status: 500 }
     );
   }

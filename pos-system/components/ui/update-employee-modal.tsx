@@ -21,6 +21,11 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [phase2, setPhase2] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+
+  const [oldName, setOldName] = useState("");
+  const [oldJobTitle, setOldJobTitle] = useState("");
+  const [oldHourlyWage, setOldHourlyWage] = useState("");
+  const [oldHours, setOldHours] = useState("");
   
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -112,18 +117,27 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
 
       const data = await response.json();
 
+      setEmployeeName(data.employee.name);
+      setJobTitle(data.employee.job_title);
+      setHourlyWage(data.employee.hourly_wage);
+      setHours(data.employee.hours);
+
+      setOldName(data.employee.name);
+      setOldJobTitle(data.employee.job_title);
+      setOldHourlyWage(data.employee.hourly_wage);
+      setOldHours(data.employee.hours);
+
+
       if (!response.ok) {
         throw new Error(data.error || "Failed to find employee");
       }
-
-      resetForm1();
-      //onSuccess();
+      setPhase2(true);
     } catch (error) {
       console.error("Error updating employee:", error);
       setError(error instanceof Error ? error.message : "An unknown error occurred");
+      setPhase2(false);
     } finally {
       setIsSearching(false);
-      setPhase2(true);
     }
   };
 
@@ -145,7 +159,18 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
       return;
     }
 
+    if (!employeeName && !jobTitle && !hourlyWage && !hours) {
+      setError("At least one field must be updated");
+      return;
+    }
+
     setIsSubmitting(true);
+
+    // replace empty fields with old values
+    const nameToSend = employeeName.trim() === '' ? oldName : employeeName;
+    const jobTitleToSend = jobTitle.trim() === '' ? oldJobTitle : jobTitle;
+    const wageToSend = hourlyWage.trim() === '' ? oldHourlyWage : hourlyWage;
+    const hoursToSend = hours.trim() === '' ? oldHours : hours;
 
     try {
       const response = await fetch('/api/employees/update', {
@@ -155,10 +180,10 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
         },
         body: JSON.stringify({
           employee_id: employeeID,
-          name: employeeName,
-          job_title: jobTitle,
-          hourly_wage: wageNum,
-          hours: hoursNum,
+          name: nameToSend,
+          job_title: jobTitleToSend,
+          hourly_wage: wageToSend,
+          hours: hoursToSend,
         }),
       });
 
@@ -168,6 +193,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
         throw new Error(data.error || "Failed to update employee");
       }
 
+      resetForm1();
       resetForm2();
       onSuccess();
     } catch (error) {
@@ -175,6 +201,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
       setError(error instanceof Error ? error.message : "An unknown error occurred");
     } finally {
       setIsSubmitting(false);
+      setPhase2(false);
     }
   }
 

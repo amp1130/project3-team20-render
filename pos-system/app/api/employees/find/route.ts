@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       
       if (checkResult.rows.length === 0) {
         return NextResponse.json(
-          { error: "employee not found" },
+          { error: "Employee not found" },
           { status: 404 }
         );
       }
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       // Return success message
       return NextResponse.json({ 
         message: "Employee found",
-        deleted: checkResult.rows[0]
+        employee: checkResult.rows[0]
       });
     } finally {
       // Release the client back to the pool
