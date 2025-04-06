@@ -47,37 +47,37 @@ export default function EmployeesPage() {
         fetchEmployees();
       }, [isInitialized, isManagerMode, router]);
 
-    return (
+      return (
         <>
             <Navigation />
             <div className="container mx-auto p-6 pt-24">
-                <EmployeeTable 
-                    employees={employees} 
-                    loading={loading} 
-                />
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-[#3c2f1f]">Edit Employees</h1>
                     <div className="flex gap-2">
                         <Button 
-                        className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-                        onClick={() => setIsAddModalOpen(true)}
+                            className="bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
+                            onClick={() => setIsAddModalOpen(true)}
                         >
                             Add Employee
                         </Button>
                         <Button 
-                            className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
+                            className="bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
                             onClick={() => setIsDeleteModalOpen(true)}
                         >
                             Delete Employee
                         </Button>
                         <Button 
-                            className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
+                            className="bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
                             onClick={() => setIsUpdateModalOpen(true)}
                         >
                             Update Employee
                         </Button>
                     </div>
                 </div>
+                <EmployeeTable 
+                    employees={employees} 
+                    loading={loading} 
+                />
                 <AddEmployeeModal 
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
@@ -92,7 +92,7 @@ export default function EmployeesPage() {
                     onSuccess={() => {
                         setIsDeleteModalOpen(false);
                         fetchEmployees();
-                }}
+                    }}
                 />
                 <UpdateEmployeeModal 
                     isOpen={isUpdateModalOpen}
@@ -100,9 +100,10 @@ export default function EmployeesPage() {
                     onSuccess={() => {
                         setIsUpdateModalOpen(false);
                         fetchEmployees();
-                }}
+                    }}
                 />
             </div>
         </>
     );
+    
 }
