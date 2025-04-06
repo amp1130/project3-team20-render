@@ -93,7 +93,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     }
 
     if (isNaN(wageNum) || wageNum < 0) {
-      setError("hourly wage must be a non-negative number");
+      setError("Hourly wage must be a non-negative number");
       return;
     }
 

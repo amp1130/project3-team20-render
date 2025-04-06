@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { set } from "react-hook-form";
 
 interface UpdateEmployeeModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
   const [hours, setHours] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [phase2, setPhase2] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -33,6 +36,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setPhase2(false);
         onClose();
       }
     }
@@ -50,6 +54,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
   useEffect(() => {
     function handleEscKey(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        setPhase2(false);
         onClose();
       }
     }
@@ -63,42 +68,80 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
     };
   }, [isOpen, onClose]);
 
-  const resetForm = () => {
+  const resetForm1 = () => {
     setEmployeeID("");
+  };
+
+  const resetForm2 = () => {
     setEmployeeName("");
     setJobTitle("");
     setHourlyWage("");
     setHours("");
     setError("");
-  };
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
-    // Validate inputs
-    if (!employeeID || !employeeName || !jobTitle || !hourlyWage || !hours) {
-      setError("All fields are required");
+
+    // Validate numeric field
+    const idNum = parseInt(employeeID);
+
+    if (!employeeID) {
+      setError("Employee ID is required");
       return;
     }
-
-    // Validate numeric fields
-    const idNum = parseInt(employeeID);
-    const wageNum = parseFloat(hourlyWage);
-    const hoursNum = parseInt(hours);
 
     if (isNaN(idNum) || idNum <= 0) {
       setError("Employee ID must be a positive number");
       return;
     }
 
-    if (isNaN(wageNum) || wageNum < 0) {
-      setError("hourly wage must be a non-negative number");
+    setIsSearching(true);
+
+    try {
+      const response = await fetch('/api/employees/find', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          employee_id: idNum,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to find employee");
+      }
+
+      resetForm1();
+      //onSuccess();
+    } catch (error) {
+      console.error("Error updating employee:", error);
+      setError(error instanceof Error ? error.message : "An unknown error occurred");
+    } finally {
+      setIsSearching(false);
+      setPhase2(true);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    // Validate numeric field
+    const wageNum = parseInt(hourlyWage);
+    const hoursNum = parseInt(hours);
+
+    if (wageNum && (isNaN(wageNum) || wageNum <= 0)) {
+      setError("Hourly wage must be a positive number");
       return;
     }
 
-    if (isNaN(hoursNum) || hoursNum < 0) {
-      setError("Hours must be a non-negative number");
+    if (hoursNum && (isNaN(hoursNum) || hoursNum <= 0)) {
+      setError("Hours must be a positive number");
       return;
     }
 
@@ -111,7 +154,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          employee_id: idNum,
+          employee_id: employeeID,
           name: employeeName,
           job_title: jobTitle,
           hourly_wage: wageNum,
@@ -125,7 +168,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
         throw new Error(data.error || "Failed to update employee");
       }
 
-      resetForm();
+      resetForm2();
       onSuccess();
     } catch (error) {
       console.error("Error updating employee:", error);
@@ -133,7 +176,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }
 
   if (!isOpen) return null;
 
@@ -152,96 +195,116 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
         
         <h2 className="text-xl font-bold text-[#3c2f1f] mb-4">Update Employee</h2>
         
-        <form onSubmit={handleSubmit}>
+        {!phase2 && (
+          <form onSubmit={handleSearch}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="employee-id" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                  Employee ID
+                </label>
+                <input
+                  ref={firstInputRef}
+                  type="number"
+                  id="employee-id"
+                  value={employeeID}
+                  onChange={(e) => setEmployeeID(e.target.value)}
+                  className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
+                  placeholder="Enter employee ID"
+                />
+              </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  resetForm1();
+                  onClose();
+                }}
+                className="border-[#d4c8bc] text-[#5c4f42]"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
+                disabled={isSearching}
+              >
+                {isSearching ? "Searching..." : "Find Employee"}
+              </Button>
+            </div>
+          </form>
+        )}
+        {phase2 && (
+          <form onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <div>
-              <label htmlFor="employee-id" className="block text-sm font-medium text-[#5c4f42] mb-1">
-                Employee ID
-              </label>
-              <input
-                ref={firstInputRef}
-                type="number"
-                id="employee-id"
-                value={employeeID}
-                onChange={(e) => setEmployeeID(e.target.value)}
-                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
-                placeholder="Enter employee ID"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="employee-name" className="block text-sm font-medium text-[#5c4f42] mb-1">
-                Employee Name
-              </label>
-              <input
-                type="text"
-                id="employee-name"
-                value={employeeName}
-                onChange={(e) => setEmployeeName(e.target.value)}
-                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
-                placeholder="Enter employee name"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="job-title" className="block text-sm font-medium text-[#5c4f42] mb-1">
-                Job Title
-              </label>
-              <input
-                type="text"
-                id="job-title"
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
-                placeholder="Enter job title"
-                step="0.01"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="hourly-wage" className="block text-sm font-medium text-[#5c4f42] mb-1">
-                Hourly Wage
-              </label>
-              <input
-                type="number"
-                id="hourly-wage"
-                value={hourlyWage}
-                onChange={(e) => setHourlyWage(e.target.value)}
-                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
-                placeholder="Enter hourly wage"
-                step="0.01"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="hours" className="block text-sm font-medium text-[#5c4f42] mb-1">
-                Hours
-              </label>
-              <input
-                type="number"
-                id="hours"
-                value={hours}
-                onChange={(e) => setHours(e.target.value)}
-                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
-                placeholder="Enter hours"
-                step="0.01"
-              />
-            </div>
-            
+              <div>
+                <label htmlFor="employee-name" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                  New Employee Name
+                </label>
+                <input
+                  ref={firstInputRef}
+                  type="text"
+                  id="employee-name"
+                  value={employeeName}
+                  onChange={(e) => setEmployeeName(e.target.value)}
+                  className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
+                  placeholder="Enter employee name" />
+              </div>
+              <div>
+                <label htmlFor="job-title" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                  New Job Title
+                </label>
+                <input
+                  type="text"
+                  id="job-title"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
+                  placeholder="Enter job title"
+                  step="0.01" />
+                </div>
+                <div>
+                  <label htmlFor="hourly-wage" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                    New Hourly Wage
+                  </label>
+                  <input
+                    type="number"
+                    id="hourly-wage"
+                    value={hourlyWage}
+                    onChange={(e) => setHourlyWage(e.target.value)}
+                    className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
+                    placeholder="Enter hourly wage"
+                    step="0.01" />
+                </div>
+                <div>
+                  <label htmlFor="hours" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                    New Hours
+                  </label>
+                  <input
+                    type="number"
+                    id="hours"
+                    value={hours}
+                    onChange={(e) => setHours(e.target.value)}
+                    className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
+                    placeholder="Enter hours"
+                    step="0.01" />
+                </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
-          
           <div className="flex justify-end space-x-3 mt-6">
             <Button
               type="button"
               variant="outline"
               onClick={() => {
-                resetForm();
-                onClose();
+                resetForm2();
+                setPhase2(false);
               }}
               className="border-[#d4c8bc] text-[#5c4f42]"
             >
-              Cancel
+              Back
             </Button>
             <Button
               type="submit"
@@ -252,6 +315,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
             </Button>
           </div>
         </form>
+        )}
       </div>
     </div>
   );
