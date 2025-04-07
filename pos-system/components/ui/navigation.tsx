@@ -119,30 +119,30 @@ export function Navigation() {
           {/* Manager-specific buttons (only visible in manager mode) */}
           {isManagerMode && (
             <div className="flex mr-2">
-              <Button
-                variant="outline"
-                className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
-                onClick={() => router.push('/reports')}
-              >
-                <BarChart2 className="h-4 w-4" />
-                View Reports
-              </Button>
-              <Button
-                variant="outline"
-                className="border-[#d4c8bc] bg-transparent text-[#5c4f42]"
-                onClick={() => router.push('/inventory')}
-              >
-                <Package className="h-4 w-4" />
-                Inventory
-              </Button>
-              <Button
-                variant="outline"
-                className="border-[#d4c8bc] bg-transparent text-[#5c4f42]"
-                onClick={() => router.push('/employees')}
-              >
-                <Users className="h-4 w-4" />
-                Employees
-              </Button>
+            <Button
+              variant="outline"
+              className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
+              onClick={() => router.push('/reports')}
+            >
+              <BarChart2 className="h-4 w-4" />
+              View Reports
+            </Button>
+            <Button
+              variant="outline"
+              className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
+              onClick={() => router.push('/inventory')}
+            >
+              <Package className="h-4 w-4" />
+              Inventory
+            </Button>
+            <Button
+              variant="outline"
+              className="border-[#d4c8bc] bg-transparent text-[#5c4f42]"
+              onClick={() => router.push('/employees')}
+            >
+              <Users className="h-4 w-4" />
+              Employees
+            </Button>
             </div>
           )}
           
