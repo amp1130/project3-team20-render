@@ -170,7 +170,7 @@ export function UpdateEmployeeModal({ isOpen, onClose, onSuccess }: UpdateEmploy
     const nameToSend = employeeName.trim() === '' ? oldName : employeeName;
     const jobTitleToSend = jobTitle.trim() === '' ? oldJobTitle : jobTitle;
     const wageToSend = hourlyWage.trim() === '' ? oldHourlyWage : hourlyWage;
-    const hoursToSend = hours.trim() === '' ? oldHours : hours;
+    const hoursToSend = hours === '' ? oldHours : hours;
 
     try {
       const response = await fetch('/api/employees/update', {
