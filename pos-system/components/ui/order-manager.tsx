@@ -50,8 +50,6 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
 
   // Add item to order
   const addItem = (item: OrderItem) => {
-    console.log("Adding item:", item);
-    
     setOrderItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (orderItem) => orderItem.item_name === item.item_name
@@ -61,13 +59,13 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + 1
+          quantity: updatedItems[existingItemIndex].quantity + item.quantity
         };
         return updatedItems;
       } else {
         const orderItemId = `order-item-${Date.now()}-${orderItemCounter}`;
         setOrderItemCounter(prev => prev + 1);
-        return [...prevItems, { ...item, quantity: 1, orderItemId, menu_id: item.menu_id }];
+        return [...prevItems, { ...item, orderItemId, menu_id: item.menu_id }];
       }
     });
   };
@@ -75,6 +73,26 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   // Remove item from order
   const removeItem = (orderItemId: string) => {
     setOrderItems((prevItems) => prevItems.filter((item) => item.orderItemId !== orderItemId));
+  };
+
+  // Ability to update order quantity
+  const updateItemQuantity = (orderItemId: string, newQuantity: number) => {
+    if(newQuantity == 0){
+      // Delete item if less than 1 ordered
+      return removeItem(orderItemId);
+    }
+
+    setOrderItems((prevItems) => {
+      const updatedItems = [...prevItems];
+      const itemIndex = updatedItems.findIndex(item => item.orderItemId === orderItemId);
+      if (itemIndex >= 0) {
+        updatedItems[itemIndex] = {
+          ...updatedItems[itemIndex],
+          quantity: newQuantity
+        };
+      }
+      return updatedItems;
+    });
   };
 
   // Handle employee ID confirmation
@@ -140,7 +158,6 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
 
       <h2 className="text-xl font-bold text-[#5c4f42] p-4 pb-2">Current Order</h2>
       
-      {/* Rest of the component remains the same */}
       <div className="flex-1 overflow-y-auto p-4 pt-2">
         <div className="space-y-3">
           {orderItems.length > 0 ? (
@@ -162,7 +179,21 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
                     <span className="text-[#5c4f42] text-sm">${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center mt-1">
-                    <span className="text-[#8c7b6b] text-xs">Qty: {item.quantity}</span>
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={() => updateItemQuantity(item.orderItemId!, item.quantity - 1)}
+                        className="text-[#5c4f42] text-xl"
+                      >
+                        -
+                      </button>
+                      <span className="text-[#8c7b6b] text-xs">{item.quantity}</span>
+                      <button 
+                        onClick={() => updateItemQuantity(item.orderItemId!, item.quantity + 1)}
+                        className="text-[#5c4f42] text-xl"
+                      >
+                        +
+                      </button>
+                    </div>
                     <button 
                       onClick={() => removeItem(item.orderItemId!)}
                       className="text-[#a67c52] hover:text-[#8c6542]"
