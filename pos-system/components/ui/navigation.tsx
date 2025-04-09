@@ -2,7 +2,7 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import {User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users } from "lucide-react";
+import { User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { WeatherDisplay } from "./weather-display";
@@ -96,6 +96,14 @@ export function Navigation() {
   return (
     <>
       <div className="fixed top-0 left-0 right-0 flex items-center p-4 bg-card/80 backdrop-blur-sm z-10 border-b border-gray-300">
+        {/* Back Button */}
+        <button
+          onClick={() => router.push('/')}
+          className="mr-4 p-2 rounded hover:bg-[#e6ded5] text-[#3c2f1f] transition"
+          aria-label="Go Back"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
         <Link href="/" className="cursor-pointer">
           <Image src="/logo.png" alt="Logo" width={56} height={56} className="mr-12" />
         </Link>
@@ -110,7 +118,7 @@ export function Navigation() {
           <Button
             variant="outline"
             className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/Order')}
           >
             <ShoppingCart className="h-4 w-4" />
             Order Screen

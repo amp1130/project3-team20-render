@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { X, Check } from "lucide-react";
 import Image from "next/image";
 import { AddOrderModal } from "@/components/ui/add-order-modal";
+import { ToppingModal } from "@/components/ui/topping-modal";
+
 
 export type OrderItem = {
   id: number;
@@ -14,7 +16,9 @@ export type OrderItem = {
   quantity: number;
   menu_id: number;
   orderItemId?: string;
+  toppings?: string[]; // <-- add this line
 };
+
 
 interface OrderManagerProps {
   initialItems?: OrderItem[];
@@ -33,6 +37,11 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const [employeeId, setEmployeeId] = useState<string>('');
   const [isEmployeeIdConfirmed, setIsEmployeeIdConfirmed] = useState(false);
   const [employeeIdInput, setEmployeeIdInput] = useState('');
+
+  const [isToppingModalOpen, setIsToppingModalOpen] = useState(false);
+  const [pendingItem, setPendingItem] = useState<OrderItem | null>(null);
+  const [pendingToppings, setPendingToppings] = useState<string[]>([]);
+
 
   // Calculate totals whenever order items or tip changes
   useEffect(() => {
@@ -110,16 +119,27 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
     setEmployeeIdInput('');
   };
 
-  // Expose addItem function globally
+  const handleAddToOrder = (item: OrderItem) => {
+    setPendingItem(item);
+    setIsToppingModalOpen(true);
+  };
+
   useEffect(() => {
     // @ts-ignore
-    window.addToOrder = addItem;
-    
+    window.addToOrder = handleAddToOrder;
     return () => {
       // @ts-ignore
       window.addToOrder = undefined;
     };
   }, []);
+
+  const confirmToppings = (toppings: string[]) => {
+    if (pendingItem) {
+      addItem({ ...pendingItem, toppings });
+      setPendingItem(null);
+    }
+  };
+  
 
   return (
     <div className="w-80 border-l border-[#e6ded5] bg-white flex flex-col">
@@ -175,7 +195,12 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
                 
                 <div className="flex-1">
                   <div className="flex justify-between">
-                    <span className="font-medium text-[#3c2f1f] text-sm">{item.item_name}</span>
+                    <div>
+                      <span className="font-medium text-[#3c2f1f] text-sm">{item.item_name}</span>
+                      {item.toppings && item.toppings.length > 0 && (
+                        <p className="text-xs italic text-[#8c7b6b]">{item.toppings.join(", ")}</p>
+                      )}
+                    </div>
                     <span className="text-[#5c4f42] text-sm">${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center mt-1">
@@ -247,6 +272,14 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
           setOrderItems([]); 
           setIsCheckoutOpen(false);
         }}
+      />
+      <ToppingModal
+        isOpen={isToppingModalOpen}
+        onClose={() => {
+          setIsToppingModalOpen(false);
+          setPendingItem(null);
+        }}
+        onConfirm={confirmToppings}
       />
     </div>
   );

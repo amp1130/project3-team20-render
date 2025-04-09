@@ -12,9 +12,14 @@ function assignCategoryToItem(item: { menu_id: number; item_name: string; price:
     category = "Fruit Tea";
   } else if (item.menu_id === 18 || item.menu_id === 19 || item.menu_id === 20) {
     category = "Blended";
-  }
-  else if (item.menu_id === 15 || item.menu_id === 16 || item.menu_id === 17){
+  }else if (item.menu_id === 15 || item.menu_id === 16 || item.menu_id === 17){
     category = "Fresh Milk";
+  }else if(item.menu_id === 4){
+    category = "Coffee"
+  } else if(item.menu_id === 13 || item.menu_id === 14 ){
+    category = "Crema"
+  }else if(item.menu_id === 10){
+    category = "Tea"
   }
 
   return { ...item, category };

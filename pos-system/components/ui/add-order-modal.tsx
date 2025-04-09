@@ -18,7 +18,7 @@ interface AddOrderModalProps {
   onClose: () => void;
   orderItems: OrderItem[];
   total: number;
-  employeeId: string; // Keep this line
+  employeeId: number; 
   onSuccess: () => void;
 }
 
