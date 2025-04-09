@@ -21,7 +21,7 @@ export default function MenuBoardPage() {
   useEffect(() => {
     const fetchMenuBoard = async () => {
       try {
-        const response = await fetch('/api/menu-board'); // You’ll create this API route
+        const response = await fetch('/api/menu-board'); 
         const data = await response.json();
         setMenuItems(data);
       } catch (error) {
