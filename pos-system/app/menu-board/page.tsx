@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { getProductEmojis } from "@/components/ui/menu-item-card"; // Import the emoji function
 
 interface MenuItem {
   menu_id: number;
@@ -52,13 +53,16 @@ export default function MenuBoardPage() {
             key={item.menu_id}
             className="bg-[#faf0e6] rounded-xl shadow-lg p-4 flex flex-col items-center"
           >
-            <Image
+            {/* <Image
               src="/boba.png"
               alt={item.item_name}
               width={100}
               height={100}
               className="mb-4"
-            />
+            /> */}
+            <div className="h-20 w-full flex items-center justify-center">
+              <div className="text-3xl">{getProductEmojis(item.item_name)}</div>
+            </div>
             <h2 className="text-lg font-semibold text-[#b79c85]">
               {item.item_name}
             </h2>

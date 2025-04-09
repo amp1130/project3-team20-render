@@ -16,7 +16,7 @@ interface MenuItemCardProps {
 }
 
 // Function to get emojis based on product name
-const getProductEmojis = (productName: string): string => {
+export function getProductEmojis(productName: string): string {
   const productNameLower = productName.toLowerCase();
   
   // Map specific product names to emojis
