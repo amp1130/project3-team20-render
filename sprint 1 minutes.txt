@@ -1,0 +1,104 @@
+﻿SCRUM Meeting 1 for BobaBoba
+Prepared by: Sarvesh Karunakaran
+Meeting Date: 4/7/25
+Meeting Attendees
+1. Sarvesh Karunakaran
+2. Andrey Pridgen
+3. Haya Abusada
+4. Amit Kancherla
+5. Kesha Patel
+
+
+Meeting Agenda Items
+●          Discuss conflicts since the last meeting and status updates of tasks.
+●          Reflect on the positives and negatives of the last sprint and create a new plan that tackles all past inefficiencies.
+●          Review and adjust sprint backlog as needed.
+●          Set action items for the next Scrum meeting.
+●          Status Update Since Last Meeting
+ Status Update Since Last Meeting
+Accomplishments:
+●          Minimum viable product was successfully deployed.
+●          All planned tasks for Sprint 1 were completed on time accurately.
+  
+Before The Next Meeting
+Plans:
+●          Continue adding on more accessibility features
+●          Continue developing customizability options for employees and menu
+●          Starting the development of non-interactive menu item view
+
+
+Minutes from Meeting 1
+During the first 10 minutes of the Scrum meeting, the team described their progress for Sprint 1, which included what they finished, issues they had with executing all of their work, and what blocked them. For 15 minutes, we went through some of the more important features that they finished (i.e. cashier and manager screens, database connection, and most important functions of the web application). The team shared those features with some short explanations or demonstrations where needed. The next 10 minutes was about the communication gaps which pointed to the need for more regular communications and better estimates related to tasks, identifying what to focus on later. Team members provided their feedback related to what should be adjusted and what continued to work. The group was then able to shift into more effective workflows, frequent updates, and refining estimates in the backlog to increase efficiencies for the last 10 minutes of the meeting. In the last 5 minutes of the meeting, the team was able to identify the most important takeaways, develop clear Sprint 2 action items, and make sure the team was clear on what was next.
+
+
+
+
+SCRUM Meeting 2 for BobaBoba
+Prepared by: Amit Kancherla
+Meeting Date: 4/10/25
+Meeting Attendees
+1.          Sarvesh Karunakaran
+2.         Andrey Pridgen
+3.         Haya Abusada
+4.         Amit Kancherla
+5.         Kesha Patel
+Meeting Agenda Items
+·           Discuss new findings and reports since the last meeting
+·           Discuss any road bumps that have occurred since the last meeting
+·           Reflect and consider potential changes to the plan to optimize efficiency and reduce workload all around
+●          Review and adjust sprint backlog as needed.
+●          Set action items for the next Scrum meeting.
+●          Status update since last meeting
+Status Update Since Last Meeting
+Accomplishments:
+·           Continued to expand on the functionality and design of the project
+·           Dynamic employee and menu item functionality implemented
+·           Accessibility features implemented
+Before The Next Meeting
+Plans:
+●          Finish development of non-interactive menu items
+●          Start development of customer interface
+●          Start introducing Google Translate API logic and integration
+●          Begin development of item modification
+●          Begin improvement of aesthetic design
+
+
+Minutes from Previous Meeting
+During the first 10 minutes, the team recounted their progress on their assigned portions of Sprint 1 and detailed what they had finished, the roadblocks they encountered, and the progress they hope to accomplish in the coming weeks. The team then dedicated the next 15 minutes to reviewing the accessibility features and ensuring that these features assisted those with accessibility issues that prevented them from using the default website, such as poor vision. Testing was completed and we took 5 minutes to edit our burndown charts with the progress we’ve completed and remaining story points. The team discussed strategies and a more efficient workflow process which would increase the team's efficiency and cut down on time used in areas where it wasn’t needed. Team members provided feedback and through discussion, a consensus on the next steps was reached. Each team member was assigned a new task, and any backlogs were addressed. The last 10 minutes were used to reflect on given tasks and ask questions related to either a team member's individual task or the overall project.
+
+
+SCRUM Meeting 3 for BobaBoba
+Prepared by: Amit Kancherla
+Meeting Date: 4/17/25
+Meeting Attendees
+1.          Sarvesh Karunakaran
+2.         Andrey Pridgen
+3.         Haya Abusada
+4.         Amit Kancherla
+5.         Kesha Patel
+ 
+Meeting Agenda Items
+·           Discuss new findings and reports since the last meeting
+·           Discuss any road bumps that have occurred since the last meeting
+·           Reflect and consider potential changes to the plan to optimize efficiency and reduce workload all around
+●          Review and adjust sprint backlog as needed.
+●          Set action items for the next Scrum meeting.
+●          Status update since last meeting
+●          Discuss any final steps before the conclusion of the sprint
+Status Update Since Last Meeting
+Accomplishments:
+●          Completed development and integration of non-interactive menu items
+●          Started development of customer interface
+●          Started introducing Google Translate API logic and began integration
+●          Further improved design of the manager and cashier page
+●           Started development of item modification page
+  
+Before The Next Meeting
+Plans:
+●          Complete integration of non-interactive menu items
+●          Complete item modification integration
+●          Complete Google Translate API integration  
+●          (optional) Improve GUI aesthetic
+ 
+Minutes from Previous Meeting
+The team spent the first 10 minutes discussing progress made in their respective tasks and peer testing each other's design to ensure full functionality and any improvements that can be made from a third person perspective.  The team discussed roadblocks they encountered, as well as solutions they used to overcome their roadblock. Team members presented demonstrations of their work and features they wanted to continue implementing. The next 20 minutes were spent discussing the workplan and the schedule for the next sprint, and how the team would split work among the members. The next 10 minutes were used to discuss communication and methods to improve communication about the project and tasks being covered. Team members discussed ideas and possible solutions to the next task, and decisions were reached on which team member would cover which task. The final 10 minutes were used to work on the project and discuss solutions to current roadblocks that team members are encountering in their respective parts.
