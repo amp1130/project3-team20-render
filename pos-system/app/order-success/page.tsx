@@ -21,7 +21,7 @@ export default function OrderSuccess() {
       <p className="text-[#5c4f42] mt-2">Thank you for your order. It will be prepared shortly.</p>
       <Button 
         className="mt-4 bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"
-        onClick={() => router.push("/")}
+        onClick={() => router.back()}
       >
         Back to Home
       </Button>
