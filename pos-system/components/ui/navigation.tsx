@@ -2,7 +2,7 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users, ArrowLeft } from "lucide-react";
+import { User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users, ArrowLeft, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { WeatherDisplay } from "./weather-display";
@@ -11,6 +11,7 @@ import { PasswordModal } from "./password-modal";
 import { ConfirmationModal } from "./confirmation-modal";
 import { useManager } from "@/context/manager-context";
 import Link from 'next/link';
+import { useTheme } from "@/context/theme-context";
 
 export function Navigation() {
   const router = useRouter();
@@ -21,24 +22,20 @@ export function Navigation() {
   const [passwordError, setPasswordError] = useState("");
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  
-  // Get the user's first name or username
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
+
   const userName = user?.firstName || user?.username || "Guest";
 
-  // Handle showing and hiding the success toast
   useEffect(() => {
     if (showSuccessToast) {
-      // Set timer to start fade-out animation
       const fadeOutTimer = setTimeout(() => {
         setIsFadingOut(true);
-      }, 2500); // Start fade out after 2.5 seconds
-      
-      // Set timer to completely remove toast after animation
+      }, 2500);
       const removeTimer = setTimeout(() => {
         setShowSuccessToast(false);
         setIsFadingOut(false);
-      }, 3000); // Remove after 3 seconds (allowing 500ms for fade animation)
-      
+      }, 3000);
       return () => {
         clearTimeout(fadeOutTimer);
         clearTimeout(removeTimer);
@@ -48,18 +45,13 @@ export function Navigation() {
 
   const handleManagerToggle = () => {
     if (isManagerMode) {
-      // If already in manager mode, show confirmation modal before exiting
       setIsConfirmationModalOpen(true);
     } else {
-      // If not in manager mode, show password modal
       setIsPasswordModalOpen(true);
     }
   };
 
   const handlePasswordSubmit = (password: string) => {
-    // Get manager password from environment variable
-    // Note: We need to create an API route for this since environment variables
-    // with MANAGER_ prefix are not exposed to the client
     fetch('/api/verify-manager-password', {
       method: 'POST',
       headers: {
@@ -73,7 +65,7 @@ export function Navigation() {
           setManagerMode(true);
           setIsPasswordModalOpen(false);
           setPasswordError("");
-          setShowSuccessToast(true); // Show success toast
+          setShowSuccessToast(true);
         } else {
           setPasswordError("Incorrect password");
         }
@@ -84,99 +76,106 @@ export function Navigation() {
       });
   };
 
-  // When toast close button is clicked
   const handleCloseToast = () => {
     setIsFadingOut(true);
     setTimeout(() => {
       setShowSuccessToast(false);
       setIsFadingOut(false);
-    }, 300); // Allow 300ms for fade-out animation
+    }, 300);
   };
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 flex items-center p-4 bg-card/80 backdrop-blur-sm z-10 border-b border-gray-300">
+      <div className={`fixed top-0 left-0 right-0 flex items-center p-4 backdrop-blur-sm z-10 border-b ${isDark ? 'bg-[#1c1c1c] border-gray-700 text-white' : 'bg-card/80 border-gray-300 text-[#3c2f1f]'}`}>
         {/* Back Button */}
         <button
           onClick={() => router.push('/')}
-          className="mr-4 p-2 rounded hover:bg-[#e6ded5] text-[#3c2f1f] transition"
+          className={`mr-4 p-2 rounded transition ${
+            isDark
+              ? "hover:bg-gray-700 text-white"
+              : "hover:bg-[#e6ded5] text-[#3c2f1f]"
+          }`}
           aria-label="Go Back"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <Link href="/" className="cursor-pointer">
-          <Image src="/logo.png" alt="Logo" width={56} height={56} className="mr-12" />
-        </Link>
-        <p className="text-[#3c2f1f] font-medium">Welcome, {userName}</p>
-        
-        {/* weather api */}
+
+        {/* Logo */}
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={56}
+          height={56}
+          className="mr-12"
+          style={{ filter: isDark ? "brightness(0) invert(1)" : "none" }}
+        />
+
+        <p className={`${isDark ? 'text-white' : 'text-[#3c2f1f]'} font-medium`}>Welcome, {userName}</p>
+
         <div className="ml-12">
           <WeatherDisplay />
         </div>
-        
-        <div className="ml-auto flex items-center">
+
+        <div className="ml-auto flex items-center gap-x-2">
           <Button
             variant="outline"
-            className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
+            className={`bg-transparent ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700' : 'text-[#5c4f42] border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
             onClick={() => router.push('/Order')}
           >
             <ShoppingCart className="h-4 w-4" />
             Order Screen
           </Button>
-          
-          {/* Manager-specific buttons (only visible in manager mode) */}
+
           {isManagerMode && (
-            <div className="flex mr-2">
-            <Button
-              variant="outline"
-              className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
-              onClick={() => router.push('/reports')}
-            >
-              <BarChart2 className="h-4 w-4" />
-              View Reports
-            </Button>
-            <Button
-              variant="outline"
-              className="border-[#d4c8bc] mr-2 bg-transparent text-[#5c4f42]"
-              onClick={() => router.push('/inventory')}
-            >
-              <Package className="h-4 w-4" />
-              Inventory
-            </Button>
-            <Button
-              variant="outline"
-              className="border-[#d4c8bc] bg-transparent text-[#5c4f42]"
-              onClick={() => router.push('/employees')}
-            >
-              <Users className="h-4 w-4" />
-              Employees
-            </Button>
-            </div>
+            <>
+              <Button
+                variant="outline"
+                className={`bg-transparent ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700' : 'text-[#5c4f42] border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
+                onClick={() => router.push('/reports')}
+              >
+                <BarChart2 className="h-4 w-4" />
+                View Reports
+              </Button>
+              <Button
+                variant="outline"
+                className={`bg-transparent ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700' : 'text-[#5c4f42] border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
+                onClick={() => router.push('/inventory')}
+              >
+                <Package className="h-4 w-4" />
+                Inventory
+              </Button>
+              <Button
+                variant="outline"
+                className={`bg-transparent ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700' : 'text-[#5c4f42] border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
+                onClick={() => router.push('/employees')}
+              >
+                <Users className="h-4 w-4" />
+                Employees
+              </Button>
+            </>
           )}
-          
-          {/* Manager Mode Toggle Button */}
+
           <Button
             variant="outline"
-            className={`border-[#d4c8bc] mr-2 ${
-              isManagerMode 
-                ? "bg-[#e6ded5] text-[#3c2f1f]" 
-                : "bg-transparent text-[#5c4f42]"
-            }`}
+            className={`${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700' : isManagerMode ? 'bg-[#e6ded5] text-[#3c2f1f] border-[#d4c8bc]' : 'bg-transparent text-[#5c4f42] border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
             onClick={handleManagerToggle}
           >
-            {isManagerMode ? (
-              <>
-                <User className="h-4 w-4" />
-                Switch to Cashier
-              </>
-            ) : (
-              <>
-                <User className="h-4 w-4" />
-                Switch to Manager
-              </>
-            )}
+            <User className="h-4 w-4" />
+            {isManagerMode ? "Switch to Cashier" : "Switch to Manager"}
           </Button>
-          
+
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full border transition ${isDark ? 'border-gray-500 hover:bg-gray-700' : 'border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
+            aria-label="Toggle Dark Mode"
+          >
+            {isDark ? (
+              <Sun className="h-5 w-5 text-white" />
+            ) : (
+              <Moon className="h-5 w-5 text-[#3c2f1f]" />
+            )}
+          </button>
+
           <UserButton 
             afterSignOutUrl="/"
             appearance={{
@@ -187,8 +186,7 @@ export function Navigation() {
           />
         </div>
       </div>
-      
-      {/* Password Modal */}
+
       <PasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => {
@@ -199,7 +197,6 @@ export function Navigation() {
         error={passwordError}
       />
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
         onClose={() => setIsConfirmationModalOpen(false)}
@@ -207,8 +204,7 @@ export function Navigation() {
         title="Exit Manager Mode"
         message="Are you sure you want to switch back to cashier mode? You will need to enter the password again to return to manager mode."
       />
-      
-      {/* Success Toast with fade-out animation */}
+
       {showSuccessToast && (
         <div 
           className={`fixed bottom-4 right-4 bg-green-50 border border-green-200 text-green-800 rounded-md shadow-md p-4 flex items-center z-50 transition-opacity duration-300 ease-in-out ${
@@ -231,3 +227,4 @@ export function Navigation() {
     </>
   );
 }
+
