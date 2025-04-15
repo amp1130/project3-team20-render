@@ -1,0 +1,99 @@
+SCRUM Meeting 1 for BobaBoba
+Prepared by: Sarvesh Karunakaran
+Meeting Date: 4/7/25 
+
+Meeting Attendees  
+1. Sarvesh Karunakaran  
+2. Andrey Pridgen  
+3. Haya Abusada  
+4. Amit Kancherla  
+5. Kesha Patel  
+
+Meeting Agenda Items  
+● Review completed and incomplete items from Sprint 1  
+● Identify unfinished tasks and assign owners to wrap them up  
+● Discuss what went well and what could be improved from Sprint 1  
+● Plan and prioritize initial goals for Sprint 2  
+● Set action items for the next Scrum meeting  
+
+Status Update Since Last Meeting  
+Accomplishments: 
+● Successful deployment of MVP for Sprint 1  
+● Completion of core functionality including employee login and order tracking  
+● Frontend connected to database
+
+Before The Next Meeting – Plans:  
+● Wrap up any Sprint 1 tasks left unfinished  
+● Fix any lingering UI bugs and start planning user-facing improvements  
+● Outline priorities and milestones for Sprint 2  
+
+Minutes from Meeting 1  
+During the first 10 minutes, the team walked through what was completed in Sprint 1 and highlighted any features or tasks that were not finished. The discussion emphasized how these leftover tasks would be handled immediately in Sprint 2 before starting anything new. The next 15 minutes were focused on reviewing successful parts of Sprint 1 like the functional cashier and manager screens, along with backend connections, and identifying any bugs or parts that needed refining. Following that, 10 minutes were dedicated to a retrospective, reflecting on what went smoothly and where the team experienced bottlenecks, particularly in communication and time estimation. For the final 10 minutes, the team re-evaluated the backlog and prioritized carryover tasks. They wrapped up with 5 minutes discussing who would handle specific Sprint 1 leftovers and setting clear goals for Sprint 2 kickoff.
+
+
+
+SCRUM Meeting 2 for BobaBoba  
+Prepared by: Amit Kancherla
+Meeting Date: 4/10/25  
+
+Meeting Attendees  
+1. Sarvesh Karunakaran  
+2. Andrey Pridgen  
+3. Haya Abusada  
+4. Amit Kancherla  
+5. Kesha Patel  
+
+Meeting Agenda Items 
+● Finalize assignments for Sprint 2 tasks  
+● Break down Sprint 2 goals into actionable parts  
+● Address any new blockers or workload issues  
+● Review and update sprint backlog  
+● Set action items for the next Scrum meeting  
+
+Status Update Since Last Meeting 
+Accomplishments:  
+● Sprint 1 carryover items mostly completed  
+● Initial plan for Sprint 2 discussed and confirmed  
+● Team roles adjusted for better task distribution  
+
+Before The Next Meeting – Plans:  
+● Begin implementation of Sprint 2 features (customer view, visual-only menu)  
+● Develop Google Translate integration plan  
+● Make progress on topping customization and modification modal  
+
+Minutes from Previous Meeting
+The first 10 minutes of this Scrum meeting were spent confirming that remaining tasks from Sprint 1 were being wrapped up. Each team member shared a quick status report on their responsibilities. For the next 15 minutes, the team worked together to define Sprint 2’s scope and split the tasks among the group. Members discussed priorities such as implementing the customer-facing interface, the topping selection modal, and visual improvements. The next 5 minutes were used to edit the Sprint 2 board and assign tasks accordingly. Afterward, for 10 minutes, the team aligned on deadlines and goals for the next check-in. The meeting ended with a brief Q&A where team members clarified their roles and responsibilities, ensuring everyone had clear direction moving forward.
+
+
+
+SCRUM Meeting 3 for BobaBoba 
+Prepared by: Amit Kancherla
+Meeting Date: 4/14/25
+
+Meeting Attendees  
+1. Sarvesh Karunakaran  
+2. Andrey Pridgen  
+3. Haya Abusada  
+4. Amit Kancherla  
+5. Kesha Patel  
+
+Meeting Agenda Items 
+● Conduct check-in for Sprint 2 progress  
+● Review remaining tasks and upcoming deadlines  
+● Discuss any blockers or design changes  
+● Reflect on team workflow and planning  
+● Set final tasks and expectations for end of Sprint  
+
+Status Update Since Last Meeting 
+Accomplishments:
+● Work started on topping selection modal and customer interface  
+● Menu board display and light/dark theme work underway  
+● Progress made on multilingual support planning  
+
+Before The Next Meeting – Plans:
+● Finalize topping modal and ensure styling consistency  
+● Complete customer interface and test across browsers  
+● Final review and polishing of Sprint 2 features  
+
+Minutes from Previous Meeting 
+This meeting focused on checking in on the team's progress during the mid-to-late point of Sprint 2. The first 10 minutes involved individual updates from each member, describing which Sprint 2 tasks had been completed and what remained. For the next 15 minutes, the team reviewed their shared board, crossing off completed items and identifying the remaining tasks that could be reasonably finished before the end of the sprint. The group discussed how to best divide these last items and how to overcome any blockers. Another 10 minutes were used to reflect on team coordination—communication had improved, but some challenges remained with managing shared responsibilities. The final 10 minutes were spent on collaborative debugging, assigning final tasks, and reiterating the plan for ensuring Sprint 2 finishes strong and transitions well into Sprint 3.
