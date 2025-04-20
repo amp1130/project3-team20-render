@@ -40,7 +40,12 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
 
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [pendingToppings, setPendingToppings] = useState<string[]>([]);
-  const [nutritionInfo, setNutritionInfo] = useState({ calories: 0, sugar: 0 });
+  const [nutritionInfo, setNutritionInfo] = useState({
+    calories: 0,
+    sugar: 0,
+    toppings: [] as string[],  
+  });
+  
 
   useEffect(() => {
     const newSubtotal = orderItems.reduce(
@@ -113,22 +118,35 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const confirmToppings = async (toppings: string[]) => {
     if (pendingItem?.menu_id) {
       try {
-        setPendingToppings(toppings);
+        const filteredToppings = toppings.filter(
+          (t) => !["Less Ice", "Extra Ice", "Less Sugar", "Extra Sugar"].includes(t)
+        );
+  
+        setPendingToppings(toppings); // full list for cart
         setIsToppingModalOpen(false);
-
+  
         const res = await fetch(`/api/nutrition?menuId=${pendingItem.menu_id}`);
         if (!res.ok) throw new Error("Nutrition fetch failed");
-
+  
         const data = await res.json();
-        setNutritionInfo({ calories: data.calories, sugar: data.sugar });
+        setNutritionInfo({
+          calories: data.calories,
+          sugar: data.sugar,
+          toppings: filteredToppings, // filtered for nutrition popup
+        });
+  
         setIsNutritionOpen(true);
       } catch (err) {
         console.error("Failed to fetch nutrition:", err);
-        setNutritionInfo({ calories: 0, sugar: 0 });
+        setNutritionInfo({ calories: 0, sugar: 0, toppings: [] });
         setIsNutritionOpen(true);
       }
     }
   };
+  
+  
+  
+  
 
   const handleNutritionContinue = () => {
     if (pendingItem) {
@@ -229,13 +247,14 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         onConfirm={confirmToppings}
       />
 
-      <NutritionPopup 
+      <NutritionPopup
         isOpen={isNutritionOpen}
         onClose={() => setIsNutritionOpen(false)}
         onContinue={handleNutritionContinue}
         menuId={pendingItem?.menu_id}
-        toppings={pendingToppings}
+        toppings={nutritionInfo.toppings}
       />
+
     </>
   );
 }

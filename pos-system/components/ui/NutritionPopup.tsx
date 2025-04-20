@@ -77,11 +77,11 @@ export function NutritionPopup({
 
       if (menuItem) {
         const ingredientsList = [...menuItem.ingredients];
-        toppings.forEach((topping) => {
+        toppings.forEach(topping => {
           if (!ingredientsList.includes(topping)) {
             ingredientsList.push(topping);
           }
-        });
+        });        
         setIngredients(ingredientsList);
 
         const ingredientDataResponse = await fetch(`/api/menu-ingredients?menuId=${menuId}`);
