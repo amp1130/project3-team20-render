@@ -9,6 +9,8 @@ import Image from "next/image";
 import { AddOrderModal } from "@/components/ui/add-order-modal";
 import { ToppingModal } from "@/components/ui/topping-modal";
 import { useTheme } from "@/context/theme-context";
+import { NutritionPopup } from "@/components/ui/NutritionPopup";
+
 
 export type OrderItem = {
   id: number;
@@ -36,6 +38,34 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const [isToppingModalOpen, setIsToppingModalOpen] = useState(false);
   const [pendingItem, setPendingItem] = useState<OrderItem | null>(null);
   const { theme } = useTheme();
+  const [isNutritionOpen, setIsNutritionOpen] = useState(false);
+  const [pendingToppings, setPendingToppings] = useState<string[]>([]);
+  const [nutritionInfo, setNutritionInfo] = useState({ calories: 0, sugar: 0, allergens: [] as string[] });
+
+const nutritionMap: Record<number, { calories: number; sugar: number }> = {
+  1: { calories: 180, sugar: 24 },
+  2: { calories: 220, sugar: 30 },
+  3: { calories: 190, sugar: 22 },
+  4: { calories: 200, sugar: 26 },
+  5: { calories: 210, sugar: 28 },
+  6: { calories: 170, sugar: 20 },
+  7: { calories: 160, sugar: 18 },
+  8: { calories: 230, sugar: 32 },
+  9: { calories: 185, sugar: 21 },
+  10: { calories: 195, sugar: 25 },
+  11: { calories: 175, sugar: 19 },
+  12: { calories: 205, sugar: 27 },
+  13: { calories: 190, sugar: 23 },
+  14: { calories: 225, sugar: 31 },
+  15: { calories: 165, sugar: 17 },
+  16: { calories: 155, sugar: 16 },
+  17: { calories: 245, sugar: 34 },
+  18: { calories: 215, sugar: 29 },
+  19: { calories: 185, sugar: 22 },
+  20: { calories: 198, sugar: 24 },
+};
+
+
 
   useEffect(() => {
     const newSubtotal = orderItems.reduce(
@@ -106,13 +136,37 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
       window.addToOrder = undefined;
     };
   }, []);
-
   const confirmToppings = (toppings: string[]) => {
     if (pendingItem) {
-      addItem({ ...pendingItem, toppings });
-      setPendingItem(null);
+      setPendingToppings(toppings);
+  
+      // Static nutrition logic
+      const nutrition = nutritionMap[pendingItem.menu_id] || { calories: 150, sugar: 20 };
+      const allergens: string[] = [];
+  
+      // We'll let the NutritionPopup handle the allergen detection now
+      
+      setNutritionInfo({
+        calories: nutrition.calories,
+        sugar: nutrition.sugar,
+        allergens,
+      });
+  
+      setIsToppingModalOpen(false);
+      setIsNutritionOpen(true);
     }
   };
+  
+
+  const handleNutritionContinue = () => {
+    if (pendingItem) {
+      addItem({ ...pendingItem, toppings: pendingToppings });
+      setPendingItem(null);
+      setPendingToppings([]);
+      setIsNutritionOpen(false);
+    }
+  };
+  
 
   const bgClass = theme === "dark" ? "bg-[#2a2a2a]" : "bg-white";
   const panelClass = theme === "dark" ? "bg-[#1e1e1e] text-white" : "bg-[#f8f5f2] text-[#3c2f1f]";
@@ -243,6 +297,18 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         onClose={() => setIsToppingModalOpen(false)}
         onConfirm={confirmToppings}
       />
+
+      <NutritionPopup
+        isOpen={isNutritionOpen}
+        onClose={() => setIsNutritionOpen(false)}
+        onContinue={handleNutritionContinue}
+        calories={nutritionInfo.calories}
+        sugar={nutritionInfo.sugar}
+        allergens={nutritionInfo.allergens}
+        menuId={pendingItem?.menu_id}
+        toppings={pendingToppings}
+      />
+
     </>
   );
 }
