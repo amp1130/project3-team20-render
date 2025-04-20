@@ -32,97 +32,76 @@ function assignCategoryToItem(itemName: string) {
 
 export async function POST(request: Request) {
     try {
-        const { menu_id, item_name, price, description, ingredients } = await request.json();
-        
-        // Validate required fields (including menu_id as in the Java code)
-        if (!menu_id || !item_name || !price) {
-            return NextResponse.json(
-                { error: "Menu ID, item name, and price are required" },
-                { status: 400 }
-            );
-        }
-
-        // Connect to the database
-        const client = await pool.connect();
-        
-        try {
-            // Start transaction
-            await client.query('BEGIN');
-            
-            // Check if item with the same name already exists
-            const checkResult = await client.query(
-                'SELECT * FROM MenuItems WHERE item_name = $1',
-                [item_name]
-            );
-            
-            if (checkResult.rows.length > 0) {
-                await client.query('ROLLBACK');
-                return NextResponse.json(
-                    { error: "Menu item with this name already exists" },
-                    { status: 409 }
-                );
-            }
-            
-            // Insert the new menu item (with menu_id included)
-            const insertQuery = `
-                INSERT INTO MenuItems (menu_id, item_name, price) 
-                VALUES ($1, $2, $3) 
-                RETURNING *
-            `;
-            
-            const result = await client.query(insertQuery, [
-                menu_id,
-                item_name, 
-                price,
-            ]);
-            
-            // Get the inserted item with its ID
-            const newItem = result.rows[0];
-            
-            // Process ingredients if provided (similar to the Java code)
-            if (ingredients && ingredients.length > 0) {
-                const ingredientIds = Array.isArray(ingredients) 
-                    ? ingredients 
-                    : ingredients.split(',').map((id: string) => id.trim());
-                
-                for (const ingredientId of ingredientIds) {
-                    await client.query(
-                        'INSERT INTO MenuToIngredient (menu_id, ingredient_id) VALUES ($1, $2)',
-                        [newItem.item_id, parseInt(ingredientId)]
-                    );
-                }
-            }
-            
-            // Commit transaction
-            await client.query('COMMIT');
-            
-            // Assign a category to the new item
-            const category = assignCategoryToItem(item_name);
-            
-            // Add category to the response item
-            const itemWithCategory = {
-                ...newItem,
-                category
-            };
-            
-            // Return success message with the new item
-            return NextResponse.json({ 
-                message: "Menu item added successfully",
-                item: itemWithCategory
-            });
-        } catch (error) {
-            // Rollback in case of error
-            await client.query('ROLLBACK');
-            throw error;
-        } finally {
-            // Release the client back to the pool
-            client.release();
-        }
-    } catch (error) {
-        console.error("Error adding menu item:", error);
+      const { menu_id, item_name, price, description, ingredients, calories, sugar } = await request.json();
+  
+      if (!menu_id || !item_name || !price || calories == null || sugar == null) {
         return NextResponse.json(
-            { error: "Failed to add menu item" },
-            { status: 500 }
+          { error: "Menu ID, item name, price, calories, and sugar are required" },
+          { status: 400 }
         );
+      }
+  
+      const client = await pool.connect();
+  
+      try {
+        await client.query("BEGIN");
+  
+        const checkResult = await client.query(
+          "SELECT * FROM MenuItems WHERE item_name = $1",
+          [item_name]
+        );
+        if (checkResult.rows.length > 0) {
+          await client.query("ROLLBACK");
+          return NextResponse.json(
+            { error: "Menu item with this name already exists" },
+            { status: 409 }
+          );
+        }
+  
+        const insertQuery = `
+          INSERT INTO MenuItems (menu_id, item_name, price)
+          VALUES ($1, $2, $3)
+          RETURNING *
+        `;
+        const result = await client.query(insertQuery, [menu_id, item_name, price]);
+        const newItem = result.rows[0];
+  
+        if (ingredients && ingredients.length > 0) {
+          const ingredientIds = Array.isArray(ingredients)
+            ? ingredients
+            : ingredients.split(",").map((id: string) => id.trim());
+  
+          for (const ingredientId of ingredientIds) {
+            await client.query(
+              "INSERT INTO MenuToIngredient (menu_id, ingredient_id) VALUES ($1, $2)",
+              [newItem.menu_id, parseInt(ingredientId)]
+            );
+          }
+        }
+  
+        // Insert into nutrition table
+        await client.query(
+          "INSERT INTO nutrition (menu_id, calories, sugar) VALUES ($1, $2, $3)",
+          [newItem.menu_id, calories, sugar]
+        );
+  
+        await client.query("COMMIT");
+  
+        const category = assignCategoryToItem(item_name);
+  
+        return NextResponse.json({
+          message: "Menu item added successfully",
+          item: { ...newItem, category }
+        });
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      console.error("Error adding menu item:", error);
+      return NextResponse.json({ error: "Failed to add menu item" }, { status: 500 });
     }
 }
+  

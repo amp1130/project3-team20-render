@@ -18,6 +18,10 @@ export function AddMenuItemModal({ isOpen, onClose, onSuccess }: AddMenuItemModa
     const [category, setCategory] = useState("");
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [calories, setCalories] = useState("");
+    const [sugar, setSugar] = useState("");
+    const [ingredientIds, setIngredientIds] = useState("");
+
     
     const modalRef = useRef<HTMLDivElement>(null);
     const firstInputRef = useRef<HTMLInputElement>(null);
@@ -99,21 +103,36 @@ export function AddMenuItemModal({ isOpen, onClose, onSuccess }: AddMenuItemModa
             return;
         }
 
+        const caloriesNum = parseInt(calories);
+        const sugarNum = parseInt(sugar);
+
+        if (isNaN(caloriesNum) || caloriesNum < 0 || isNaN(sugarNum) || sugarNum < 0) {
+            setError("Calories and sugar must be non-negative numbers");
+            return;
+        }
+
+
         setIsSubmitting(true);
 
         try {
+            const caloriesNum = parseInt(calories);
+            const sugarNum = parseInt(sugar);
+            
             const response = await fetch('/api/menu-items/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    menu_id: idNum,
-                    item_name: itemName,
-                    price: priceNum,
-                    category: category,
-                }),
-            });
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                menu_id: idNum,
+                item_name: itemName,
+                price: priceNum,
+                category,
+                ingredients: ingredientIds,
+                calories: caloriesNum,
+                sugar: sugarNum,
+              }),
+            });            
 
             const data = await response.json();
 
@@ -192,6 +211,47 @@ export function AddMenuItemModal({ isOpen, onClose, onSuccess }: AddMenuItemModa
                                 step="0.01"
                             />
                         </div>
+                        <div>
+                            <label htmlFor="ingredients" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                                Ingredient IDs (comma-separated)
+                            </label>
+                            <input
+                                type="text"
+                                id="ingredients"
+                                value={ingredientIds}
+                                onChange={(e) => setIngredientIds(e.target.value)}
+                                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#a67c52] focus:border-[#a67c52]"
+                                placeholder="e.g. 3,5,8"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="calories" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                                Calories
+                            </label>
+                            <input
+                                type="number"
+                                id="calories"
+                                value={calories}
+                                onChange={(e) => setCalories(e.target.value)}
+                                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none"
+                                placeholder="Enter calories"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="sugar" className="block text-sm font-medium text-[#5c4f42] mb-1">
+                                Sugar (g)
+                            </label>
+                            <input
+                                type="number"
+                                id="sugar"
+                                value={sugar}
+                                onChange={(e) => setSugar(e.target.value)}
+                                className="w-full rounded-md border border-[#d4c8bc] bg-white py-2 px-3 text-sm focus:outline-none"
+                                placeholder="Enter sugar in grams"
+                            />
+                        </div>
+
                         
                         <div>
                             <label htmlFor="category" className="block text-sm font-medium text-[#5c4f42] mb-1">
@@ -210,6 +270,7 @@ export function AddMenuItemModal({ isOpen, onClose, onSuccess }: AddMenuItemModa
                                 <option value="Blended">Blended</option>
                             </select>
                         </div>
+
                         
                         {error && <p className="text-red-500 text-sm">{error}</p>}
                     </div>
