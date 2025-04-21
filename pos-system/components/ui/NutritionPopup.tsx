@@ -13,6 +13,8 @@ interface NutritionModalProps {
   toppings?: string[];
 }
 
+
+
 interface MenuBoardItem {
   menu_id: number;
   item_name: string;
@@ -121,11 +123,6 @@ export function NutritionPopup({
                 </h3>
                 <div className={`rounded-md overflow-hidden border ${tableBorderClass}`}>
                   <table className="w-full text-sm">
-                    <thead className={`${tableBgClass}`}>
-                      <tr>
-                        <th className={`py-2 px-3 text-center ${textClass} border-b ${tableBorderClass}`}>List</th>
-                      </tr>
-                    </thead>
                     <tbody>
                       {ingredients.length > 0 ? (
                         ingredients.map((ing, index) => (
