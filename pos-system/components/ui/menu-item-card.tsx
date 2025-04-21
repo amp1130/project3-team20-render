@@ -16,6 +16,12 @@ interface MenuItemCardProps {
   };
 }
 
+function isHappyHour(): boolean {
+  const now = new Date();
+  const hour = now.getHours();
+  return hour >= 14 && hour < 17;
+}
+
 export function getProductEmojis(productName: string): string {
   const productNameLower = productName.toLowerCase();
   if (productNameLower.includes("taro pearl milk tea")) return "🍠🧋";
@@ -45,8 +51,11 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const { theme } = useTheme();
 
+  const numericPrice = typeof item.price === "number" ? item.price : parseFloat(item.price);
+  const happyHour = isHappyHour();
+  const discountedPrice = happyHour ? numericPrice * 0.8 : numericPrice;
+
   const handleAddToOrder = () => {
-    const numericPrice = typeof item.price === "number" ? item.price : parseFloat(item.price);
     const orderItem: OrderItem = {
       id: item.id,
       item_name: item.item_name,
@@ -82,17 +91,24 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
       </div>
       <CardContent className="p-3 pb-1 pt-2 flex-grow">
         <h3 className="font-medium text-sm">{item.item_name}</h3>
-        <p
-          className={`font-bold text-sm mt-1 ${
-            theme === "dark" ? "text-gray-300" : "text-[#a67c52]"
-          }`}
-        >
-          ${typeof item.price === "number"
-            ? item.price.toFixed(2)
-            : item.price
-            ? parseFloat(item.price).toFixed(2)
-            : "N/A"}
-        </p>
+
+        <div className="mt-1 text-sm font-bold">
+          {happyHour ? (
+            <>
+              <span className="line-through mr-1 opacity-70">
+                ${numericPrice.toFixed(2)}
+              </span>
+              <span className="text-green-600">
+                ${discountedPrice.toFixed(2)}
+              </span>
+              <span className="ml-1 text-xs text-green-500 font-normal">(20% off!)</span>
+            </>
+          ) : (
+            <span className={theme === "dark" ? "text-gray-300" : "text-[#a67c52]"}>
+              ${numericPrice.toFixed(2)}
+            </span>
+          )}
+        </div>
       </CardContent>
       <CardFooter className="px-3 pt-0 pb-2">
         <Button
@@ -107,6 +123,5 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
         </Button>
       </CardFooter>
     </Card>
-
   );
 }

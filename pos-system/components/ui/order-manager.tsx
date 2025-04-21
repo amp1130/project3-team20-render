@@ -18,10 +18,16 @@ export type OrderItem = {
   menu_id: number;
   orderItemId?: string;
   toppings?: string[];
+  discountedPrice?: number;
 };
 
 interface OrderManagerProps {
   initialItems?: OrderItem[];
+}
+function isHappyHour(): boolean {
+  const now = new Date();
+  const hour = now.getHours();
+  return hour >= 14 && hour < 17;
 }
 
 export function OrderManager({ initialItems = [] }: OrderManagerProps) {
@@ -42,7 +48,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
 
   useEffect(() => {
     const newSubtotal = orderItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + (item.discountedPrice ?? item.price) * item.quantity,
       0
     );
     const newTax = newSubtotal * 0.0825;
@@ -79,7 +85,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   };
 
   const updateItemQuantity = (orderItemId: string, newQuantity: number) => {
-    if(newQuantity == 0){
+    if (newQuantity === 0) {
       return removeItem(orderItemId);
     }
 
@@ -110,7 +116,11 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   };
 
   const handleAddToOrder = (item: OrderItem) => {
-    setPendingItem(item);
+    const discountedItem = {
+      ...item,
+      discountedPrice: isHappyHour() ? Number((item.price * 0.8).toFixed(2)) : undefined,
+    };
+    setPendingItem(discountedItem);
     setIsToppingModalOpen(true);
   };
 
@@ -125,7 +135,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
 
   const confirmToppings = (toppings: string[]) => {
     if (pendingItem) {
-      addItem({ ...pendingItem, toppings });
+      addItem({ ...pendingItem, toppings, discountedPrice: pendingItem.discountedPrice });
       setPendingItem(null);
     }
   };
@@ -196,7 +206,9 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
                         <p className={`text-xs italic ${subtextClass}`}>{item.toppings.join(", ")}</p>
                       )}
                     </div>
-                    <span className={`text-sm ${controlColor}`}>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span className={`text-sm ${controlColor}`}>
+                      ${((item.discountedPrice ?? item.price) * item.quantity).toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center mt-1">
                     <div className="flex items-center space-x-2">
@@ -277,3 +289,4 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
     </div>
   );
 }
+

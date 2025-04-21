@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { useTheme } from "@/context/theme-context"; // 👈 import theme
+import { useTheme } from "@/context/theme-context";
 
 interface OrderItem {
   id: number;
@@ -35,7 +35,7 @@ export function AddOrderModal({
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { theme } = useTheme(); // 👈 get theme
+  const { theme } = useTheme();
 
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -64,10 +64,29 @@ export function AddOrderModal({
     return () => document.removeEventListener("keydown", handleEscKey);
   }, [isOpen, onClose]);
 
+  const isHappyHour = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    return hour >= 14 && hour < 17;
+  };
+
   const resetForm = () => {
     setTipAmount(0);
     setError("");
   };
+
+  const TAX_RATE = 0.0825;
+  const DISCOUNT_RATE = 0.2;
+
+  const discounted = isHappyHour();
+
+  const subtotal = orderItems.reduce((sum, item) => {
+    const price = discounted ? item.price * (1 - DISCOUNT_RATE) : item.price;
+    return sum + price * item.quantity;
+  }, 0);
+
+  const taxAmount = subtotal * TAX_RATE;
+  const discountedTotalWithTax = subtotal + taxAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +105,7 @@ export function AddOrderModal({
         body: JSON.stringify({
           order_id: Date.now(),
           employee_id: employeeId,
-          total_amount: total + tipAmount,
+          total_amount: discountedTotalWithTax + tipAmount,
           tip_amount: tipAmount,
           items: orderItems.map((item) => ({
             item_id: item.id,
@@ -126,18 +145,40 @@ export function AddOrderModal({
 
         <h2 className="text-xl font-bold mb-4">Confirm Order</h2>
 
+        {discounted && (
+          <div className="text-green-600 font-semibold text-sm mb-4">
+            🎉 Happy Hour! All items are 20% off from 2–5 PM!
+          </div>
+        )}
+
         <ul className="mb-4">
-          {orderItems.map((item) => (
-            <li key={`${item.menu_id}-${item.quantity}`} className="flex justify-between text-sm">
-              <span>{item.item_name} x {item.quantity}</span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
-            </li>
-          ))}
+          {orderItems.map((item) => {
+            const price = discounted ? item.price * (1 - DISCOUNT_RATE) : item.price;
+            const lineTotal = price * item.quantity;
+
+            return (
+              <li key={`${item.menu_id}-${item.quantity}`} className="flex justify-between text-sm">
+                <span>
+                  {item.item_name} x {item.quantity}
+                  {discounted && <span className="text-xs text-green-500 ml-1">(20% off)</span>}
+                </span>
+                <span>${lineTotal.toFixed(2)}</span>
+              </li>
+            );
+          })}
         </ul>
 
-        <div className="flex justify-between font-bold mb-4">
+        <div className="flex justify-between font-bold mb-2">
           <span>Subtotal</span>
-          <span>${total.toFixed(2)}</span>
+          <span>${subtotal.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between text-sm text-gray-500 mb-2">
+          <span>Tax (8.25%)</span>
+          <span>${taxAmount.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between font-bold mb-4">
+          <span>Total</span>
+          <span>${discountedTotalWithTax.toFixed(2)}</span>
         </div>
 
         <div>
