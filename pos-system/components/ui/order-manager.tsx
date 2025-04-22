@@ -24,6 +24,7 @@ export type OrderItem = {
 interface OrderManagerProps {
   initialItems?: OrderItem[];
 }
+//determines if happy hour time
 function isHappyHour(): boolean {
   const now = new Date();
   const hour = now.getHours();
@@ -47,6 +48,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const { theme } = useTheme();
 
   useEffect(() => {
+    //uses discounted or regular price
     const newSubtotal = orderItems.reduce(
       (sum, item) => sum + (item.discountedPrice ?? item.price) * item.quantity,
       0
@@ -116,6 +118,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   };
 
   const handleAddToOrder = (item: OrderItem) => {
+    // adds discounted prices if happy hour
     const discountedItem = {
       ...item,
       discountedPrice: isHappyHour() ? Number((item.price * 0.8).toFixed(2)) : undefined,

@@ -19,12 +19,19 @@ export type OrderItem = {
   menu_id: number;
   toppings?: string[];
   orderItemId?: string;
+  discountedPrice?: number;
 };  
 
 interface OrderManagerProps {
   initialItems?: OrderItem[];
 }
 
+//determines if happy hour time
+function isHappyHour(): boolean {
+  const now = new Date();
+  const hour = now.getHours();
+  return hour >= 14 && hour < 17;
+}
 export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const [orderItems, setOrderItems] = useState<OrderItem[]>(initialItems);
   const [subtotal, setSubtotal] = useState(0);
@@ -48,8 +55,9 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   
 
   useEffect(() => {
+    // calculates total if happy hour
     const newSubtotal = orderItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + (item.discountedPrice ?? item.price) * item.quantity,
       0
     );
     const newTax = newSubtotal * 0.0825;
@@ -102,9 +110,14 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   };
 
   const handleAddToOrder = (item: OrderItem) => {
-    setPendingItem(item);
-    setIsToppingModalOpen(true);
-  };
+    // if happy hour, it uses discounted price
+      const discountedItem = {
+        ...item,
+        discountedPrice: isHappyHour() ? Number((item.price * 0.8).toFixed(2)) : undefined,
+      };
+      setPendingItem(discountedItem);
+      setIsToppingModalOpen(true);
+    };
 
   useEffect(() => {
     // @ts-ignore
@@ -187,7 +200,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
                         )}
                       </div>
                       <span className={`${textClass} text-sm`}>
-                        ${(item.price * item.quantity).toFixed(2)}
+                      ${((item.discountedPrice ?? item.price) * item.quantity).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-1">
