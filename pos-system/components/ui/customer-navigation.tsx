@@ -1,14 +1,18 @@
 'use client';
 
-import { ArrowLeft, Moon, Sun } from "lucide-react";
+import { ArrowLeft, Moon, Sun, AArrowUp, AArrowDown, ZoomIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { WeatherDisplay } from "./weather-display";
 import { useTheme } from "@/context/theme-context";
+import { useFont } from "@/context/font-size-context";
+import { useMagnifier } from "@/context/page-magnifier-context";
 
 export function CustomerNavigation() {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
+  const { isLarge, changeFontSize } = useFont();
+  const { toggleMagnifier } = useMagnifier();
 
   const isDark = theme === "dark";
 
@@ -64,6 +68,27 @@ export function CustomerNavigation() {
           <Moon className="h-5 w-5 text-[#3c2f1f]" />
         )}
       </button>
+
+      <button
+        onClick={changeFontSize}
+        className={`p-2 rounded-full border transition ${isDark ? 'border-gray-500 hover:bg-gray-700' : 'border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
+        aria-label="Increase Font Size"
+      >
+        {isLarge ? (
+          <AArrowDown className="h-5 w-5" />
+        ) : (
+          <AArrowUp className="h-5 w-5" />    
+        )}
+      </button>
+
+      <button
+        onClick={toggleMagnifier}
+        className={`p-2 rounded-full border transition ${isDark ? 'border-gray-500 hover:bg-gray-700' : 'border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
+        aria-label="Magnifier"
+      >
+        <ZoomIn className="h-5 w-5" />
+      </button>
+
     </div>
   );
 }
