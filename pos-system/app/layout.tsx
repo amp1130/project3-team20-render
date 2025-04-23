@@ -9,6 +9,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ManagerProvider } from '@/context/manager-context';
 import { ThemeProvider } from '@/context/theme-context';
+import { FontSizeProvider } from '@/context/font-size-context';
 import Image from 'next/image';
 
 const geistSans = Geist({
@@ -77,9 +78,11 @@ export default function RootLayout({
           </SignedOut>
 
           <SignedIn>
-            <ThemeProvider> 
-              <ManagerProvider>{children}</ManagerProvider>
-            </ThemeProvider>
+            <FontSizeProvider>
+              <ThemeProvider> 
+                <ManagerProvider>{children}</ManagerProvider>
+              </ThemeProvider>
+            </FontSizeProvider>
           </SignedIn>
         </body>
       </html>
