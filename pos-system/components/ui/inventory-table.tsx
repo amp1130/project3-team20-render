@@ -92,7 +92,7 @@ export function InventoryTable({ ingredients, loading }: InventoryTableProps) {
     <div className="rounded-md border border-[#d4c8bc] p-4">
       <div className="flex justify-between mb-4">
         <h2 className="text-lg font-semibold text-[#3c2f1f]">
-          {viewMenu ? "Simplified Menu View" : "Inventory Table"}
+          {viewMenu ? "Menu Table" : "Inventory Table"}
         </h2>
         <Button onClick={() => setViewMenu((prev) => !prev)}>
           {viewMenu ? "View Inventory" : "View Menu"}
