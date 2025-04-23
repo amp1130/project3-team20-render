@@ -2,7 +2,7 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users, ArrowLeft, Moon, Sun, AArrowUp, AArrowDown } from "lucide-react";
+import { User, ShoppingCart, BarChart2, Package, X, CheckCircle, Users, ArrowLeft, Moon, Sun, AArrowUp, AArrowDown, ZoomIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { WeatherDisplay } from "./weather-display";
@@ -13,6 +13,8 @@ import { useManager } from "@/context/manager-context";
 import Link from 'next/link';
 import { useTheme } from "@/context/theme-context";
 import { useFont } from "@/context/font-size-context";
+import { useMagnifier } from "@/context/page-magnifier-context";
+
 
 export function Navigation() {
   const router = useRouter();
@@ -26,6 +28,7 @@ export function Navigation() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
   const { isLarge, changeFontSize } = useFont();
+  const { toggleMagnifier } = useMagnifier();
 
   const userName = user?.firstName || user?.username || "Guest";
 
@@ -190,6 +193,13 @@ export function Navigation() {
             )}
           </Button>
 
+          <Button
+            onClick={toggleMagnifier}
+            className={`p-2 rounded-full border transition ${isDark ? 'border-gray-500 hover:bg-gray-700' : 'border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
+            aria-label="Magnifier"
+          >
+            <ZoomIn className="h-5 w-5" />
+          </Button>
 
           <UserButton 
             afterSignOutUrl="/"

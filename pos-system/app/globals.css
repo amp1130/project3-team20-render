@@ -122,6 +122,13 @@ html.largeFont {
   font-size: 20px; /* increased font size */
 }
 
+.magnifier {
+  will-change: transform;
+}
+
+body .magnifier {
+  display: none;
+}
 
 @layer base {
   * {
