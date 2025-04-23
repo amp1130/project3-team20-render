@@ -20,23 +20,32 @@ interface MenuBoardItem {
   ingredients: string[];
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const url = new URL(req.url);
+    const simple = url.searchParams.get("simple");
+
     const client = await pool.connect();
 
-    const menuItemsQuery = `
-      SELECT mi.menu_id, mi.item_name, mi.price, i.ingredient, i.ingredient_id
-      FROM MenuItems mi
-      LEFT JOIN MenuToIngredient mti ON mi.menu_id = mti.menu_id
-      LEFT JOIN Ingredients i ON mti.ingredient_id = i.ingredient_id
-      ORDER BY mi.menu_id;
-    `;
+    const query = simple === "true"
+      ? `SELECT menu_id, item_name, price FROM MenuItems ORDER BY menu_id;`
+      : `
+        SELECT mi.menu_id, mi.item_name, mi.price, i.ingredient, i.ingredient_id
+        FROM MenuItems mi
+        LEFT JOIN MenuToIngredient mti ON mi.menu_id = mti.menu_id
+        LEFT JOIN Ingredients i ON mti.ingredient_id = i.ingredient_id
+        ORDER BY mi.menu_id;
+      `;
 
-    const result = await client.query(menuItemsQuery);
+    const result = await client.query(query);
 
-    // Group ingredients under each menu item
+    if (simple === "true") {
+      client.release();
+      return NextResponse.json(result.rows); // No need to group
+    }
+
+    // Complex version with ingredients
     const menuMap = new Map<number, MenuBoardItem>();
-
     result.rows.forEach((row) => {
       const menuId = row.menu_id;
       if (!menuMap.has(menuId)) {
@@ -54,7 +63,6 @@ export async function GET() {
     });
 
     client.release();
-
     return NextResponse.json(Array.from(menuMap.values()));
   } catch (error) {
     console.error("Error fetching menu board:", error);
@@ -64,3 +72,4 @@ export async function GET() {
     );
   }
 }
+
