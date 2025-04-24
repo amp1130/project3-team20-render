@@ -26,10 +26,10 @@ export function CustomerNavigation() {
 
     // Initialize Google Translate
     window.googleTranslateElementInit = function() {
-      new window.google.translate.TranslateElement(
+      new (window.google as any).translate.TranslateElement(
         {
           pageLanguage: 'en',
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE
+          layout: (window.google as any).translate.TranslateElement.InlineLayout.SIMPLE
         },
         'google-translate-element'
       );

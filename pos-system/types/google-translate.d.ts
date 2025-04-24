@@ -1,6 +1,6 @@
 interface Window {
-  googleTranslateElementInit: () => void;
-  google: {
+  googleTranslateElementInit?: () => void;
+  google?: {
     translate: {
       TranslateElement: {
         new (options: {
