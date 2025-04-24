@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/context/theme-context"
+import { useTheme } from "@/context/theme-context";
 import { Button } from "@/components/ui/button";
 import { CustomerNavigation } from "@/components/ui/customer-navigation";
 import { MenuItemCard } from "@/components/ui/menu-item-card";
@@ -8,6 +8,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { OrderManager } from "@/components/ui/customer-order";
 import { useState, useEffect } from "react";
 
+// Define the shape of a menu item object
 interface MenuItem {
   id: number;
   menu_id: number;
@@ -18,12 +19,14 @@ interface MenuItem {
 }
 
 export default function Home() {
+  // State for full menu, filtered items, and current category selection
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MenuItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const { theme } = useTheme();
+  const { theme } = useTheme(); // Access the current theme (light/dark)
 
+  // Predefined categories used to filter menu items
   const categories = [
     "All",
     "Milk Tea",
@@ -35,13 +38,14 @@ export default function Home() {
     "Tea",
   ];
 
+  // Fetch menu items from the backend on component mount
   useEffect(() => {
     async function fetchMenuItems() {
       try {
         const response = await fetch("/api/menu-items");
         const data = await response.json();
         setMenuItems(data);
-        setFilteredItems(data);
+        setFilteredItems(data); // Initialize filtered list with all items
       } catch (error) {
         console.error("Error fetching menu items:", error);
         setMenuItems([]);
@@ -52,9 +56,10 @@ export default function Home() {
     fetchMenuItems();
   }, []);
 
+  // Filters menu items by search query while respecting selected category
   const handleSearch = (query: string) => {
     if (!query.trim()) {
-      filterByCategory(selectedCategory);
+      filterByCategory(selectedCategory); // Reset filter if query is empty
       return;
     }
 
@@ -67,10 +72,11 @@ export default function Home() {
     setFilteredItems(filtered);
   };
 
+  // Filters menu items by category
   const filterByCategory = (category: string) => {
     setSelectedCategory(category);
     if (category === "All") {
-      setFilteredItems(menuItems);
+      setFilteredItems(menuItems); // Show all items
     } else {
       const filtered = menuItems.filter((item) => item.category === category);
       setFilteredItems(filtered);
@@ -79,13 +85,14 @@ export default function Home() {
 
   return (
     <>
-      <CustomerNavigation />
+      <CustomerNavigation /> {/* Top navigation bar */}
 
       <div
         className={`fixed inset-0 pt-[72px] flex flex-col ${
           theme === "dark" ? "bg-[#1c1c1c] text-white" : "bg-[#f8f5f2] text-[#3c2f1f]"
         }`}
       >
+        {/* Search bar and category filter buttons */}
         <div
           className={`p-4 border-b ${
             theme === "dark" ? "border-gray-700 bg-[#1c1c1c]" : "border-[#e6ded5] bg-[#f8f5f2]"
@@ -116,6 +123,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Menu display and order manager */}
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto">
             <div className="p-4">
@@ -134,10 +142,11 @@ export default function Home() {
             </div>
           </div>
 
-          <OrderManager />
+          <OrderManager /> {/* Order cart/manager component */}
         </div>
       </div>
     </>
   );
 }
+
 

@@ -1,5 +1,6 @@
-"use client";
+"use client"; // This file runs on the client side
 
+// Import UI components and hooks
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/ui/navigation";
 import { MenuItemCard } from "@/components/ui/menu-item-card";
@@ -8,6 +9,7 @@ import { OrderManager } from "@/components/ui/order-manager";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/context/theme-context";
 
+// Define the shape of a menu item object
 interface MenuItem {
   id: number;
   menu_id: number;
@@ -18,24 +20,28 @@ interface MenuItem {
 }
 
 export default function Home() {
+  // State variables to manage menu data and UI selections
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MenuItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  // Get current theme from context (dark or light mode)
   const { theme } = useTheme();
 
+  // Define menu categories for filtering
   const categories = ["All", "Milk Tea", "Fruit Tea", "Blended", "Fresh Milk", "Crema", "Coffee", "Tea"];
 
+  // Fetch menu items when component mounts
   useEffect(() => {
     async function fetchMenuItems() {
       try {
         const response = await fetch("/api/menu-items");
         const data = await response.json();
-        setMenuItems(data);
-        setFilteredItems(data);
+        setMenuItems(data);           // Store full list
+        setFilteredItems(data);       // Initially display all items
       } catch (error) {
         console.error("Error fetching menu items:", error);
-        setMenuItems([]);
+        setMenuItems([]);             // Clear on error
         setFilteredItems([]);
       }
     }
@@ -43,9 +49,10 @@ export default function Home() {
     fetchMenuItems();
   }, []);
 
+  // Handles search logic and applies category filter
   const handleSearch = (query: string) => {
     if (!query.trim()) {
-      filterByCategory(selectedCategory);
+      filterByCategory(selectedCategory); // Reset filter if query is empty
       return;
     }
 
@@ -58,26 +65,33 @@ export default function Home() {
     setFilteredItems(filtered);
   };
 
+  // Filters items based on selected category
   const filterByCategory = (category: string) => {
     setSelectedCategory(category);
 
     if (category === "All") {
-      setFilteredItems(menuItems);
+      setFilteredItems(menuItems); // Show all items
     } else {
       const filtered = menuItems.filter((item) => item.category === category);
       setFilteredItems(filtered);
     }
   };
 
-  const isDark = theme === "dark";
+  const isDark = theme === "dark"; // Boolean for dark theme check
 
   return (
     <>
-      <Navigation />
+      <Navigation /> {/* Top navigation bar */}
+
+      {/* Page layout with theme-based background and text */}
       <div className={`fixed inset-0 pt-[72px] ${isDark ? "bg-[#1c1c1c] text-white" : "bg-[#f8f5f2] text-[#3c2f1f]"} flex flex-col`}>
+        
+        {/* Search bar and category filter */}
         <div className={`p-4 border-b ${isDark ? "border-gray-700 bg-[#1c1c1c]" : "border-[#e6ded5] bg-[#f8f5f2]"}`}>
           <div className="flex flex-wrap items-center gap-4">
             <SearchBar onSearch={handleSearch} />
+            
+            {/* Category filter buttons */}
             <div className="flex gap-3 overflow-x-auto pb-1 flex-grow">
               {categories.map((category) => (
                 <Button
@@ -103,6 +117,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Menu item display section */}
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto">
             <div className="p-4">
@@ -119,7 +134,7 @@ export default function Home() {
             </div>
           </div>
 
-          <OrderManager />
+          <OrderManager /> {/* Floating order summary/cart manager */}
         </div>
       </div>
     </>
