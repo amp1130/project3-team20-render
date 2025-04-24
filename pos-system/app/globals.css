@@ -138,3 +138,49 @@ body .magnifier {
     @apply bg-background text-foreground;
   }
 }
+
+/* Google Translate Widget Styles */
+.goog-te-gadget {
+  font-family: inherit !important;
+  font-size: 14px !important;
+  color: inherit !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 28px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.goog-te-gadget-simple {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 28px !important;
+}
+
+.goog-te-gadget img {
+  vertical-align: middle !important;
+  margin-right: 4px !important;
+}
+
+.goog-te-combo {
+  height: 28px !important;
+  padding: 0 4px !important;
+  margin: 0 !important;
+  border-radius: 4px !important;
+  border: 1px solid #d4c8bc !important;
+  background-color: transparent !important;
+  color: inherit !important;
+  font-size: 14px !important;
+}
+
+/* Fix for the banner that Google adds */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}

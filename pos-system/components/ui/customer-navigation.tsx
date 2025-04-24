@@ -7,6 +7,7 @@ import { WeatherDisplay } from "./weather-display";
 import { useTheme } from "@/context/theme-context";
 import { useFont } from "@/context/font-size-context";
 import { useMagnifier } from "@/context/page-magnifier-context";
+import { useEffect } from 'react';
 
 export function CustomerNavigation() {
   const router = useRouter();
@@ -15,6 +16,31 @@ export function CustomerNavigation() {
   const { toggleMagnifier } = useMagnifier();
 
   const isDark = theme === "dark";
+
+  useEffect(() => {
+    // Add Google Translate script
+    const googleTranslateScript = document.createElement('script');
+    googleTranslateScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    googleTranslateScript.async = true;
+    document.body.appendChild(googleTranslateScript);
+
+    // Initialize Google Translate
+    window.googleTranslateElementInit = function() {
+      new window.google.translate.TranslateElement(
+        {
+          pageLanguage: 'en',
+          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE
+        },
+        'google-translate-element'
+      );
+    };
+
+    // Cleanup function
+    return () => {
+      document.body.removeChild(googleTranslateScript);
+      delete window.googleTranslateElementInit;
+    };
+  }, []);
 
   return (
     <div
@@ -88,6 +114,9 @@ export function CustomerNavigation() {
       >
         <ZoomIn className="h-5 w-5" />
       </button>
+
+      {/* Google Translate Widget */}
+      <div id="google-translate-element" className="ml-4"></div>
 
     </div>
   );
