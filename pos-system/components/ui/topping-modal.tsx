@@ -55,48 +55,47 @@ export function ToppingModal({ isOpen, onClose, onConfirm }: ToppingModalProps) 
     <Dialog open={isOpen} onClose={onClose} className="fixed z-50 inset-0 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen bg-black/30">
         <Dialog.Panel
-          className={`rounded-2xl p-6 w-[320px] shadow-xl border ${
-            theme === "dark"
-              ? "bg-[#1e1e1e] border-gray-700 text-white"
-              : "bg-white border-[#e6ded5] text-[#3c2f1f]"
-          }`}
+          className={`rounded-2xl p-6 w-[320px] shadow-xl border ${theme === "dark"
+            ? "bg-[#1e1e1e] border-gray-700 text-white"
+            : "bg-white border-[#e6ded5] text-[#3c2f1f]"
+            }`}
         >
           <Dialog.Title className="text-lg font-bold mb-4">Modifications</Dialog.Title>
 
           {/* Ice Level */}
           <div className="mb-4">
             <div className="font-semibold mb-1">Ice Level</div>
-            {["Regular", "Less Ice", "Extra Ice"].map((level) => (
-              <label key={level} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="ice"
-                  value={level}
-                  checked={iceLevel === level}
-                  onChange={() => setIceLevel(level)}
-                  className="accent-[#5c4f42]"
-                />
-                <span>{level}</span>
-              </label>
-            ))}
+            <div className="flex space-x-4">
+              {["Regular", "Less Ice", "Extra Ice"].map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setIceLevel(level)}
+                  className={`px-4 py-2 rounded-md ${iceLevel === level
+                    ? "bg-[#5c4f42] text-white"
+                    : "bg-gray-200 hover:bg-[#b79c85]"} `}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Sugar Level */}
           <div className="mb-4">
             <div className="font-semibold mb-1">Sugar Level</div>
-            {["Regular", "Less Sugar", "Extra Sugar"].map((level) => (
-              <label key={level} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="sugar"
-                  value={level}
-                  checked={sugarLevel === level}
-                  onChange={() => setSugarLevel(level)}
-                  className="accent-[#5c4f42]"
-                />
-                <span>{level}</span>
-              </label>
-            ))}
+            <div className="flex space-x-4">
+              {["Regular", "Less Sugar", "Extra Sugar"].map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setSugarLevel(level)}
+                  className={`px-4 py-2 rounded-md ${sugarLevel === level
+                    ? "bg-[#5c4f42] text-white"
+                    : "bg-gray-200 hover:bg-[#b79c85]"} `}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Other Toppings */}
@@ -128,8 +127,3 @@ export function ToppingModal({ isOpen, onClose, onConfirm }: ToppingModalProps) 
     </Dialog>
   );
 }
-
-
-
-
-
