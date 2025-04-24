@@ -21,25 +21,29 @@ interface Ingredient {
   restock_count: number;
 }
 
+interface MenuItem {
+  menu_id: number;
+  item_name: string;
+  price: number;
+}
+
 export default function InventoryPage() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
-  const router = useRouter();
-  const { isManagerMode, isInitialized } = useManager();
   const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
   const [isDeleteMenuItemModalOpen, setIsDeleteMenuItemModalOpen] = useState(false);
+  const router = useRouter();
+  const { isManagerMode, isInitialized } = useManager();
 
-  // Fetch ingredients data
   const fetchIngredients = async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/ingredients");
-      if (!response.ok) {
-        throw new Error("Failed to fetch ingredients");
-      }
+      if (!response.ok) throw new Error("Failed to fetch ingredients");
       const data = await response.json();
       setIngredients(data);
     } catch (error) {
@@ -49,15 +53,27 @@ export default function InventoryPage() {
     }
   };
 
+  const fetchMenuItems = async () => {
+    try {
+      const response = await fetch("/api/menu-board?simple=true");
+      if (!response.ok) throw new Error("Failed to fetch menu items");
+      const data = await response.json();
+      setMenuItems(data);
+    } catch (error) {
+      console.error("Error fetching menu items:", error);
+    }
+  };
+
   useEffect(() => {
     if (!isInitialized) return;
-    
+
     if (!isManagerMode) {
       router.push("/");
       return;
     }
 
     fetchIngredients();
+    fetchMenuItems();
   }, [isInitialized, isManagerMode, router]);
 
   return (
@@ -111,6 +127,8 @@ export default function InventoryPage() {
         <InventoryTable 
           ingredients={ingredients} 
           loading={loading} 
+          menuItems={menuItems}
+          fetchMenuItems={fetchMenuItems}
         />
 
         <AddIngredientModal 
@@ -146,7 +164,7 @@ export default function InventoryPage() {
           onClose={() => setIsAddMenuItemModalOpen(false)}
           onSuccess={() => {
             setIsAddMenuItemModalOpen(false);
-            fetchIngredients();
+            fetchMenuItems();
           }}
         />
         
@@ -155,7 +173,7 @@ export default function InventoryPage() {
           onClose={() => setIsDeleteMenuItemModalOpen(false)}
           onSuccess={() => {
             setIsDeleteMenuItemModalOpen(false);
-            fetchIngredients();
+            fetchMenuItems();
           }}
         />
       </div>

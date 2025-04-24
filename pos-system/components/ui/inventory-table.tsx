@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -29,25 +29,17 @@ interface MenuItem {
 interface InventoryTableProps {
   ingredients: Ingredient[];
   loading: boolean;
+  menuItems: MenuItem[];
+  fetchMenuItems: () => void;
 }
 
 type SortField = 'ingredient_id' | 'ingredient_name' | 'current_amount' | 'critical_amount' | 'restock_count';
 type SortDirection = 'asc' | 'desc';
 
-export function InventoryTable({ ingredients, loading }: InventoryTableProps) {
+export function InventoryTable({ ingredients, loading, menuItems, fetchMenuItems }: InventoryTableProps) {
   const [sortField, setSortField] = useState<SortField>('ingredient_id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [viewMenu, setViewMenu] = useState(false);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-
-  useEffect(() => {
-    if (viewMenu) {
-      fetch("/api/menu-board?simple=true")
-        .then((res) => res.json())
-        .then((data) => setMenuItems(data))
-        .catch((err) => console.error("Failed to fetch menu:", err));
-    }
-  }, [viewMenu]);
 
   if (loading && !viewMenu) {
     return (
@@ -94,7 +86,14 @@ export function InventoryTable({ ingredients, loading }: InventoryTableProps) {
         <h2 className="text-lg font-semibold text-[#3c2f1f]">
           {viewMenu ? "Menu Table" : "Inventory Table"}
         </h2>
-        <Button onClick={() => setViewMenu((prev) => !prev)}>
+        <Button onClick={() => {
+          if (!viewMenu) {
+            setViewMenu(true);
+            fetchMenuItems();
+          } else {
+            setViewMenu(false);
+          }
+        }}>
           {viewMenu ? "View Inventory" : "View Menu"}
         </Button>
       </div>
@@ -183,3 +182,4 @@ export function InventoryTable({ ingredients, loading }: InventoryTableProps) {
     </div>
   );
 }
+
