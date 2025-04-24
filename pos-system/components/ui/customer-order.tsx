@@ -49,8 +49,10 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const [nutritionInfo, setNutritionInfo] = useState({
     calories: 0,
     sugar: 0,
-    toppings: [] as string[],  
+    toppings: [] as string[],
+    allergens: [] as string[], 
   });
+  
   
 
   useEffect(() => {
@@ -145,12 +147,16 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
           calories: data.calories,
           sugar: data.sugar,
           toppings: filteredToppings, // filtered for nutrition popup
+          allergens: data.allergens ?? [], // ✅ add this line with fallback
         });
+        
+        setIsNutritionOpen(true);
+        
   
         setIsNutritionOpen(true);
       } catch (err) {
         console.error("Failed to fetch nutrition:", err);
-        setNutritionInfo({ calories: 0, sugar: 0, toppings: [] });
+        setNutritionInfo({ calories: 0, sugar: 0, toppings: [], allergens: [], });
         setIsNutritionOpen(true);
       }
     }
@@ -265,6 +271,9 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         onContinue={handleNutritionContinue}
         menuId={pendingItem?.menu_id}
         toppings={nutritionInfo.toppings}
+        calories={nutritionInfo.calories} 
+        sugar={nutritionInfo.sugar}       
+        allergens={nutritionInfo.allergens}
       />
 
     </>
