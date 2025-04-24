@@ -80,7 +80,7 @@ export default function RootLayout({
                   <ManagerProvider>
                     <MagnifierProvider>
                       {children}  
-                      <PageMagnifier zoom={2} lensSize={500} />
+                      <PageMagnifier zoom={2} lensSize={700} />
                     </MagnifierProvider>
                   </ManagerProvider>
                 </ThemeProvider>

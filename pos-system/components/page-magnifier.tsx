@@ -15,7 +15,7 @@ const PageMagnifier: React.FC<{ zoom?: number; lensSize?: number }> = ({
   const cloneRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let animationFrameId: number;
+    let animationFrameId: number | undefined;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!animationFrameId) {
@@ -33,8 +33,10 @@ const PageMagnifier: React.FC<{ zoom?: number; lensSize?: number }> = ({
 
     const handleMouseLeave = () => {
       setMousePos((prev) => ({ ...prev, visible: false }));
-      cancelAnimationFrame(animationFrameId);
-      animationFrameId = undefined;
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = undefined;
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -43,7 +45,9 @@ const PageMagnifier: React.FC<{ zoom?: number; lensSize?: number }> = ({
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
   }, []);
 
