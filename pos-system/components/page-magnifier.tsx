@@ -5,14 +5,17 @@ import { useMagnifier } from "@/context/page-magnifier-context";
 const PageMagnifier: React.FC<{ zoom?: number; lensSize?: number }> = ({
   zoom = 2,
   lensSize = 200,
-}) => {  
+}) => {
   const { isEnabled } = useMagnifier();
-
+  
+  // Ensure that we're only using window on the client side
   const [mousePos, setMousePos] = useState({ x: 0, y: 0, visible: false });
   const magnifierRef = useRef<HTMLDivElement | null>(null);
   const cloneRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !isEnabled) return;
+
     let animationFrameId: number | undefined;
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -37,10 +40,8 @@ const PageMagnifier: React.FC<{ zoom?: number; lensSize?: number }> = ({
       }
     };
 
-    if (isEnabled) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseleave", handleMouseLeave);
-    }
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
@@ -49,12 +50,12 @@ const PageMagnifier: React.FC<{ zoom?: number; lensSize?: number }> = ({
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [isEnabled]); // Add isEnabled as a dependency to handle state change
+  }, [isEnabled]); // Depend on isEnabled to stop when it's turned off
 
   useEffect(() => {
     if (!cloneRef.current || typeof document === "undefined" || !isEnabled) return;
 
-    // Clone the body and remove magnifier elements from the clone
+    // Function to update the clone
     const updateClone = () => {
       if (!cloneRef.current) return; // Ensure cloneRef is not null
 
@@ -71,16 +72,16 @@ const PageMagnifier: React.FC<{ zoom?: number; lensSize?: number }> = ({
     // Initial update on mount and mouse movement
     updateClone();
 
-    // Periodic update every 1 second
-    const intervalId = setInterval(updateClone, 100); // every 0.1 second
+    // Periodic update every 100ms while the magnifier is enabled
+    const intervalId = setInterval(updateClone, 100);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [mousePos, isEnabled]); // Only update if magnifier is enabled
+  }, [mousePos, isEnabled]); // Depend on mousePos and isEnabled to update the clone
 
-  const offsetX = (mousePos.x + window.scrollX) * zoom - lensSize / 2;
-  const offsetY = (mousePos.y + window.scrollY) * zoom - lensSize / 2;
+  const offsetX = (mousePos.x + (typeof window !== "undefined" ? window.scrollX : 0)) * zoom - lensSize / 2;
+  const offsetY = (mousePos.y + (typeof window !== "undefined" ? window.scrollY : 0)) * zoom - lensSize / 2;
 
   return (
     <>
