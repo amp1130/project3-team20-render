@@ -133,21 +133,20 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
   const confirmToppings = async (toppings: string[]) => {
     if (pendingItem?.menu_id) {
       try {
-        // Store all toppings for the order cart
+        // Store all toppings for the cart display
         setPendingToppings(toppings);
         setIsToppingModalOpen(false);
-
-        // Fetch base nutrition data
+  
+        // Fetch nutrition data
         const res = await fetch(`/api/nutrition?menuId=${pendingItem.menu_id}`);
         if (!res.ok) throw new Error("Nutrition fetch failed");
-
+  
         const data = await res.json();
         
-        // Pass all toppings to the nutrition popup
         setNutritionInfo({
           calories: data.calories,
           sugar: data.sugar,
-          toppings: toppings,
+          toppings: toppings, // Pass all toppings for nutrition calculations
           allergens: data.allergens ?? [],
         });
         
@@ -157,7 +156,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         setNutritionInfo({ 
           calories: 0, 
           sugar: 0, 
-          toppings: toppings, // Still pass toppings even if fetch fails
+          toppings: toppings,
           allergens: [] 
         });
         setIsNutritionOpen(true);

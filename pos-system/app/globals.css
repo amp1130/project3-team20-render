@@ -184,3 +184,21 @@ body .magnifier {
 body {
   top: 0 !important;
 }
+/* Make the Google Translate dropdown scrollable */
+.goog-te-menu-value {
+  max-height: 40px !important;
+  overflow-y: auto !important;
+}
+
+.goog-te-menu2 {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+.goog-te-menu-frame.skiptranslate {
+  height: auto !important;
+  max-height: 300px !important;
+  overflow-y: scroll !important;
+  top: 40px !important;
+}
+

@@ -79,11 +79,18 @@ export function NutritionPopup({
 
       if (menuItem) {
         const ingredientsList = [...menuItem.ingredients];
-        toppings.forEach(topping => {
+        
+        // Only add real toppings to ingredients list, not modifiers
+        const realToppings = toppings.filter(
+          topping => !["Extra Ice", "Less Ice", "Extra Sugar", "Less Sugar", "Regular"].includes(topping)
+        );
+        
+        realToppings.forEach(topping => {
           if (!ingredientsList.includes(topping)) {
             ingredientsList.push(topping);
           }
         });
+        
         setIngredients(ingredientsList);
 
         const ingredientDataResponse = await fetch(`/api/menu-ingredients?menuId=${menuId}`);
@@ -102,7 +109,7 @@ export function NutritionPopup({
     }
   };
 
-  // Compute adjusted calories and sugar based on toppings
+  // Compute adjusted calories and sugar based on all toppings
   const adjusted = useMemo(() => {
     let extraCals = 0;
     let extraSugar = 0;
