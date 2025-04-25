@@ -129,34 +129,37 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
     };
   }, []);
 
+  
   const confirmToppings = async (toppings: string[]) => {
     if (pendingItem?.menu_id) {
       try {
-        const filteredToppings = toppings.filter(
-          (t) => !["Less Ice", "Extra Ice", "Less Sugar", "Extra Sugar"].includes(t)
-        );
-  
-        setPendingToppings(toppings); // full list for cart
+        // Store all toppings for the order cart
+        setPendingToppings(toppings);
         setIsToppingModalOpen(false);
-  
+
+        // Fetch base nutrition data
         const res = await fetch(`/api/nutrition?menuId=${pendingItem.menu_id}`);
         if (!res.ok) throw new Error("Nutrition fetch failed");
-  
+
         const data = await res.json();
+        
+        // Pass all toppings to the nutrition popup
         setNutritionInfo({
           calories: data.calories,
           sugar: data.sugar,
-          toppings: filteredToppings, // filtered for nutrition popup
-          allergens: data.allergens ?? [], // ✅ add this line with fallback
+          toppings: toppings,
+          allergens: data.allergens ?? [],
         });
         
         setIsNutritionOpen(true);
-        
-  
-        setIsNutritionOpen(true);
       } catch (err) {
         console.error("Failed to fetch nutrition:", err);
-        setNutritionInfo({ calories: 0, sugar: 0, toppings: [], allergens: [], });
+        setNutritionInfo({ 
+          calories: 0, 
+          sugar: 0, 
+          toppings: toppings, // Still pass toppings even if fetch fails
+          allergens: [] 
+        });
         setIsNutritionOpen(true);
       }
     }
@@ -270,9 +273,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         onClose={() => setIsNutritionOpen(false)}
         onContinue={handleNutritionContinue}
         menuId={pendingItem?.menu_id}
-        toppings={nutritionInfo.toppings}
-        calories={nutritionInfo.calories} 
-        sugar={nutritionInfo.sugar}       
+        toppings={nutritionInfo.toppings}    
         allergens={nutritionInfo.allergens}
       />
 
