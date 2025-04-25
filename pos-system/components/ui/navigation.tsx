@@ -12,7 +12,6 @@ import { ConfirmationModal } from "./confirmation-modal";
 import { useManager } from "@/context/manager-context";
 import Link from 'next/link';
 import { useTheme } from "@/context/theme-context";
-import { useFont } from "@/context/font-size-context";
 import { useMagnifier } from "@/context/page-magnifier-context";
 
 
@@ -27,7 +26,6 @@ export function Navigation() {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
-  const { isLarge, changeFontSize } = useFont();
   const { toggleMagnifier } = useMagnifier();
 
   const userName = user?.firstName || user?.username || "Guest";
@@ -180,18 +178,6 @@ export function Navigation() {
               <Moon className="h-5 w-5 text-[#3c2f1f]" />
             )}
           </button>
-
-          <Button
-            onClick={changeFontSize}
-            className={`p-2 rounded-full border transition ${isDark ? 'border-gray-500 hover:bg-gray-700' : 'border-[#d4c8bc] hover:bg-[#e6ded5]'}`}
-            aria-label="Increase Font Size"
-          >
-            {isLarge ? (
-              <AArrowDown className="h-5 w-5" />
-            ) : (
-              <AArrowUp className="h-5 w-5" />    
-            )}
-          </Button>
 
           <Button
             onClick={toggleMagnifier}
