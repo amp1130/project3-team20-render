@@ -64,15 +64,21 @@ export function ToppingModal({ isOpen, onClose, onConfirm }: ToppingModalProps) 
 
           {/* Ice Level */}
           <div className="mb-4">
-            <div className="font-semibold mb-1">Ice Level</div>
+            <div className={`font-semibold mb-1 ${theme === "dark" ? "text-white" : "text-[#3c2f1f]"}`}>
+              Ice Level
+            </div>
             <div className="flex flex-wrap gap-2">
               {["Regular", "Less Ice", "Extra Ice"].map((level) => (
                 <button
                   key={level}
                   onClick={() => setIceLevel(level)}
-                  className={`px-4 py-2 rounded-md ${iceLevel === level
-                    ? "bg-[#5c4f42] text-white"
-                    : "bg-gray-200 hover:bg-[#b79c85]"} `}
+                  className={`px-4 py-2 rounded-md transition ${
+                    iceLevel === level
+                      ? "bg-[#5c4f42] text-white"
+                      : theme === "dark"
+                        ? "bg-[#333] text-white hover:bg-[#444]"
+                        : "bg-gray-200 text-[#3c2f1f] hover:bg-[#b79c85]"
+                  }`}
                 >
                   {level}
                 </button>
@@ -82,21 +88,28 @@ export function ToppingModal({ isOpen, onClose, onConfirm }: ToppingModalProps) 
 
           {/* Sugar Level */}
           <div className="mb-4">
-            <div className="font-semibold mb-1">Sugar Level</div>
+            <div className={`font-semibold mb-1 ${theme === "dark" ? "text-white" : "text-[#3c2f1f]"}`}>
+              Sugar Level
+            </div>
             <div className="flex flex-wrap gap-2">
               {["Regular", "Less Sugar", "Extra Sugar"].map((level) => (
                 <button
                   key={level}
                   onClick={() => setSugarLevel(level)}
-                  className={`px-4 py-2 rounded-md ${sugarLevel === level
-                    ? "bg-[#5c4f42] text-white"
-                    : "bg-gray-200 hover:bg-[#b79c85]"} `}
+                  className={`px-4 py-2 rounded-md transition ${
+                    sugarLevel === level
+                      ? "bg-[#5c4f42] text-white"
+                      : theme === "dark"
+                        ? "bg-[#333] text-white hover:bg-[#444]"
+                        : "bg-gray-200 text-[#3c2f1f] hover:bg-[#b79c85]"
+                  }`}
                 >
                   {level}
                 </button>
               ))}
             </div>
           </div>
+
 
           {/* Other Toppings */}
           <div className="mb-2 font-semibold">Select Toppings</div>
