@@ -55,7 +55,7 @@ export function ToppingModal({ isOpen, onClose, onConfirm }: ToppingModalProps) 
     <Dialog open={isOpen} onClose={onClose} className="fixed z-50 inset-0 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen bg-black/30">
         <Dialog.Panel
-          className={`rounded-2xl p-6 w-[320px] shadow-xl border ${theme === "dark"
+          className={`rounded-2xl p-6 w-400px] shadow-xl border ${theme === "dark"
             ? "bg-[#1e1e1e] border-gray-700 text-white"
             : "bg-white border-[#e6ded5] text-[#3c2f1f]"
             }`}
@@ -65,7 +65,7 @@ export function ToppingModal({ isOpen, onClose, onConfirm }: ToppingModalProps) 
           {/* Ice Level */}
           <div className="mb-4">
             <div className="font-semibold mb-1">Ice Level</div>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-2">
               {["Regular", "Less Ice", "Extra Ice"].map((level) => (
                 <button
                   key={level}
@@ -83,7 +83,7 @@ export function ToppingModal({ isOpen, onClose, onConfirm }: ToppingModalProps) 
           {/* Sugar Level */}
           <div className="mb-4">
             <div className="font-semibold mb-1">Sugar Level</div>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-2">
               {["Regular", "Less Sugar", "Extra Sugar"].map((level) => (
                 <button
                   key={level}
