@@ -46,7 +46,6 @@ export function CustomerNavigation() {
         display: none;
         position: absolute !important;
         top: 48px !important;
-        left: auto !important;
         right: 12px !important;
         width: 80vw !important;
         height: 200px !important;
@@ -64,31 +63,36 @@ export function CustomerNavigation() {
       }
     `;
     document.head.appendChild(styleElement);
-
-    const googleTranslateScript = document.createElement("script");
-    googleTranslateScript.src =
-      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    googleTranslateScript.async = true;
-    document.body.appendChild(googleTranslateScript);
-
-    // Setup init
-    window.googleTranslateElementInit = function() {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: 'en',
-          layout: window.google.translate.TranslateElement.InlineLayout.VERTICAL, 
-        },
-        'google-translate-element'
-      );
+  
+    // Ensure script is only injected once
+    if (!(window as any).googleTranslateScriptAdded) {
+      const googleTranslateScript = document.createElement("script");
+      googleTranslateScript.src =
+        "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      googleTranslateScript.async = true;
+      document.body.appendChild(googleTranslateScript);
+      (window as any).googleTranslateScriptAdded = true;
+    }
+  
+    // Ensure init runs even if script already loaded
+    (window as any).googleTranslateElementInit = function () {
+      if (!(window as any)._translateInitialized) {
+        new (window as any).google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            layout: (window as any).google.translate.TranslateElement.InlineLayout.VERTICAL,
+          },
+          "google-translate-element"
+        );
+        (window as any)._translateInitialized = true;
+      }
     };
-    
-
+  
     return () => {
       document.head.removeChild(styleElement);
-      document.body.removeChild(googleTranslateScript);
-      delete window.googleTranslateElementInit;
     };
   }, []);
+  
 
   return (
     <div
