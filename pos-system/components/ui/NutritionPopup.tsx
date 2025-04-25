@@ -144,10 +144,10 @@ export function NutritionPopup({
           <Dialog.Title className={`text-xl font-bold mb-4 ${subTextClass}`}>Nutrition Info</Dialog.Title>
 
           <p className={`${textClass} mb-2`}>
-            Calories: <strong>{adjusted.calories}</strong>
+            Calories: <strong translate="no" >{adjusted.calories}</strong>
           </p>
           <p className={`${textClass} mb-4`}>
-            Sugar: <strong>{adjusted.sugar}g</strong>
+            Sugar: <strong translate="no" >{adjusted.sugar}g</strong>
           </p>
 
           {loading ? (

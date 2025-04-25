@@ -230,10 +230,10 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         </div>
 
         <div className={`p-4 border-t ${borderClass}`}>
-          <div className="flex justify-between mb-2"><span className={textClass}>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-          <div className="flex justify-between mb-2"><span className={textClass}>Tax</span><span>${tax.toFixed(2)}</span></div>
-          <div className="flex justify-between mb-2"><span className={textClass}>Tip</span><span>${tipAmount.toFixed(2)}</span></div>
-          <div className="flex justify-between font-bold mb-4"><span className={accentText}>Total</span><span className={accentText}>${total.toFixed(2)}</span></div>
+          <div className="flex justify-between mb-2"><span className={textClass}>Subtotal</span><span translate="no">${subtotal.toFixed(2)}</span></div>
+          <div className="flex justify-between mb-2"><span className={textClass}>Tax</span><span translate="no">${tax.toFixed(2)}</span></div>
+          <div className="flex justify-between mb-2"><span className={textClass}>Tip</span><span translate="no">${tipAmount.toFixed(2)}</span></div>
+          <div className="flex justify-between font-bold mb-4"><span className={accentText}>Total</span><span className={accentText} translate="no">${total.toFixed(2)}</span></div>
 
           <Button
             className={`w-full transition ${theme === "dark" ? "bg-gray-700 hover:bg-gray-600 text-white" : "bg-[#5c4f42] hover:bg-[#3c2f1f] text-white"}`}
