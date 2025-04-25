@@ -230,9 +230,9 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
         </div>
 
         <div className={`p-4 border-t ${borderClass}`}>
-          <div className="flex justify-between mb-2"><span className={textClass}>Subtotal</span><span className={textClass}>${subtotal.toFixed(2)}</span></div>
-          <div className="flex justify-between mb-2"><span className={textClass}>Tax</span><span className={textClass}>${tax.toFixed(2)}</span></div>
-          <div className="flex justify-between mb-2"><span className={textClass}>Tip</span><span className={textClass}>${tipAmount.toFixed(2)}</span></div>
+          <div className="flex justify-between mb-2"><span className={textClass}>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+          <div className="flex justify-between mb-2"><span className={textClass}>Tax</span><span>${tax.toFixed(2)}</span></div>
+          <div className="flex justify-between mb-2"><span className={textClass}>Tip</span><span>${tipAmount.toFixed(2)}</span></div>
           <div className="flex justify-between font-bold mb-4"><span className={accentText}>Total</span><span className={accentText}>${total.toFixed(2)}</span></div>
 
           <Button
