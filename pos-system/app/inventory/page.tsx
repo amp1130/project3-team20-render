@@ -12,7 +12,7 @@ import { DeleteIngredientModal } from "@/components/ui/delete-ingredient-modal";
 import { RestockIngredientModal } from "@/components/ui/restock-ingredient-modal";
 import { AddMenuItemModal } from "@/components/ui/add-menu-item";
 import { DeleteMenuItemModal } from "@/components/ui/delete-menu-item";
-
+import { ModifyMenuItemModal } from "@/components/ui/modify-menu-item-modal";
 // Interfaces for ingredient and menu item data
 interface Ingredient {
   ingredient_id: number;
@@ -40,6 +40,7 @@ export default function InventoryPage() {
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
   const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
   const [isDeleteMenuItemModalOpen, setIsDeleteMenuItemModalOpen] = useState(false);
+  const [isModifyMenuItemModalOpen, setIsModifyMenuItemModalOpen] = useState(false);
 
   const router = useRouter();
   const { isManagerMode, isInitialized } = useManager(); // Manager access control
@@ -140,6 +141,14 @@ export default function InventoryPage() {
               <Trash2 className="h-4 w-4 mr-1" />
               Delete Menu Item
             </Button>
+            <Button
+              onClick={() => setIsModifyMenuItemModalOpen(true)}
+              variant="outline"
+              className="border-[#d4c8bc] text-[#5c4f42] hover:bg-yellow-50"
+            >
+              <RefreshCw className="h-4 w-4 mr-1" />
+              Modify Menu Item
+            </Button>
           </div>
         </div>
 
@@ -194,6 +203,14 @@ export default function InventoryPage() {
           onClose={() => setIsDeleteMenuItemModalOpen(false)}
           onSuccess={() => {
             setIsDeleteMenuItemModalOpen(false);
+            fetchMenuItems();
+          }}
+        />
+        <ModifyMenuItemModal 
+          isOpen={isModifyMenuItemModalOpen}
+          onClose={() => setIsModifyMenuItemModalOpen(false)}
+          onSuccess={() => {
+            setIsModifyMenuItemModalOpen(false);
             fetchMenuItems();
           }}
         />
