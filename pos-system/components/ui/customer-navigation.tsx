@@ -23,27 +23,109 @@ export function CustomerNavigation() {
   const { isLarge, changeFontSize } = useFont();
   const { toggleMagnifier } = useMagnifier();
   const isDark = theme === "dark";
-  const [isTranslateReady, setIsTranslateReady] = useState(false);
   const [translateVisible, setTranslateVisible] = useState(false);
   const translateRef = useRef<HTMLDivElement>(null);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
-  const handleTranslateClick = () => {
-    const iframe = document.querySelector("iframe.goog-te-menu-frame") as HTMLIFrameElement;
-    if (iframe) {
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-      const menu = iframeDoc?.querySelector(".goog-te-menu2");
-      if (menu) {
-        iframe.style.display = translateVisible ? "none" : "block";
-        setTranslateVisible(!translateVisible);
-      }
+  // Function to reset and fully reinitialize the translate functionality
+  const resetTranslateWidget = () => {
+    // Remove existing widget components
+    const existingIframe = document.querySelector("iframe.goog-te-menu-frame") as HTMLIFrameElement;
+    if (existingIframe) {
+      existingIframe.remove();
     }
+    
+    const gtBanner = document.getElementById(":1.container");
+    if (gtBanner) {
+      gtBanner.remove();
+    }
+
+    // Clear the translate element
+    const translateElement = document.getElementById("google-translate-element");
+    if (translateElement) {
+      translateElement.innerHTML = '';
+    }
+
+    // Remove and reload the script completely
+    const existingScript = document.querySelector('script[src*="translate.google.com"]');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Load script fresh
+    loadGoogleTranslateScript();
   };
 
+  // Function to handle translate button click
+  const handleTranslateClick = () => {
+    const iframe = document.querySelector("iframe.goog-te-menu-frame") as HTMLIFrameElement;
+    
+    if (!iframe || !scriptLoaded) {
+      resetTranslateWidget();
+      // Set visibility to true for when it loads
+      setTranslateVisible(true);
+      return;
+    }
+
+    // If iframe exists, toggle visibility
+    iframe.style.display = translateVisible ? "none" : "block";
+    setTranslateVisible(!translateVisible);
+  };
+
+  // Function to load the Google Translate script
+  const loadGoogleTranslateScript = () => {
+    // Make sure we don't add the script if it's already loading
+    if (document.querySelector('script[src*="translate.google.com"]')) {
+      return;
+    }
+    
+    // Create the script element
+    const googleTranslateScript = document.createElement("script");
+    googleTranslateScript.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    googleTranslateScript.async = true;
+    
+    // Define the init function
+    (window as any).googleTranslateElementInit = function () {
+      const googleObj = (window as any).google;
+      if (googleObj && 
+          googleObj.translate && 
+          googleObj.translate.TranslateElement) {
+        
+        try {
+          new googleObj.translate.TranslateElement(
+            {
+              pageLanguage: "en",
+              autoDisplay: false,
+              layout: googleObj.translate.TranslateElement.InlineLayout ? 
+                googleObj.translate.TranslateElement.InlineLayout.VERTICAL : undefined
+            },
+            "google-translate-element"
+          );
+          setScriptLoaded(true);
+          
+          // Hide iframe by default
+          setTimeout(() => {
+            const iframe = document.querySelector("iframe.goog-te-menu-frame") as HTMLIFrameElement;
+            if (iframe) {
+              iframe.style.display = "none";
+            }
+          }, 300);
+        } catch (e) {
+          console.error("Error initializing Google Translate:", e);
+        }
+      }
+    };
+    
+    // Append script to document
+    document.body.appendChild(googleTranslateScript);
+  };
+
+  // Initial setup
   useEffect(() => {
+    // Add custom CSS for Google Translate widget
     const styleElement = document.createElement("style");
     styleElement.textContent = `
       .goog-te-menu-frame.skiptranslate {
-        display: none;
         position: absolute !important;
         top: 48px !important;
         right: 12px !important;
@@ -53,46 +135,62 @@ export function CustomerNavigation() {
         overflow-y: hidden !important;
         border: 1px solid #ccc !important;
         z-index: 9999 !important;
+        background-color: white !important;
       }
       .goog-te-menu2 {
         white-space: nowrap !important;
+        width: 100% !important;
       }
       .goog-te-menu2-item {
         display: inline-block !important;
         margin: 0 8px !important;
       }
+      #google-translate-element {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+      }
+      .VIpgJd-ZVi9od-l4eHX-hSRGPd, .skiptranslate.goog-te-gadget {
+        font-size: 0px !important;
+      }
+      .VIpgJd-ZVi9od-l4eHX-hSRGPd div {
+        display: none !important;
+      }
     `;
     document.head.appendChild(styleElement);
-  
-    // Ensure script is only injected once
-    if (!(window as any).googleTranslateScriptAdded) {
-      const googleTranslateScript = document.createElement("script");
-      googleTranslateScript.src =
-        "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      googleTranslateScript.async = true;
-      document.body.appendChild(googleTranslateScript);
-      (window as any).googleTranslateScriptAdded = true;
-    }
-  
-    // Ensure init runs even if script already loaded
-    (window as any).googleTranslateElementInit = function () {
-      if (!(window as any)._translateInitialized) {
-        new (window as any).google.translate.TranslateElement(
-          {
-            pageLanguage: "en",
-            layout: (window as any).google.translate.TranslateElement.InlineLayout.VERTICAL,
-          },
-          "google-translate-element"
-        );
-        (window as any)._translateInitialized = true;
-      }
-    };
-  
+
+    // Initialize translation
+    loadGoogleTranslateScript();
+
+    // Cleanup
     return () => {
       document.head.removeChild(styleElement);
+      setTranslateVisible(false);
     };
   }, []);
-  
+
+  // Effect for reinitializing on navigation
+  useEffect(() => {
+    // Function to run after navigation
+    const handleRouteChange = () => {
+      // Reset translate visibility
+      setTranslateVisible(false);
+      
+      // Short delay to let the DOM update
+      setTimeout(() => {
+        // Try to reset and reinitialize the widget
+        resetTranslateWidget();
+      }, 200);
+    };
+
+    // Listen for navigation events
+    window.addEventListener('popstate', handleRouteChange);
+    
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  }, []);
 
   return (
     <div
@@ -167,7 +265,7 @@ export function CustomerNavigation() {
           aria-label="Translate"
         >
           <Globe className="h-5 w-5 z-10" />
-          <div id="google-translate-element" className="absolute inset-0 opacity-0 z-0" />
+          <div id="google-translate-element" className="absolute inset-0 z-0" />
         </div>
       </div>
     </div>
