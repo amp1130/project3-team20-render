@@ -1,0 +1,98 @@
+SCRUM Meeting 1 for BobaBoba  
+Prepared by: Sarvesh Karunakaran  
+Meeting Date: 4/16/25 
+
+Meeting Attendees  
+1. Sarvesh Karunakaran  
+2. Andrey Pridgen  
+3. Haya Abusada  
+4. Amit Kancherla  
+5. Kesha Patel  
+
+Meeting Agenda Items  
+● Review Sprint 2 outcomes and incomplete items  
+● Plan detailed task breakdown for Sprint 3 user stories  
+● Assign Sprint 3 tasks based on specialization and workload  
+● Adjust sprint backlog if needed  
+● Set clear goals for next check-in  
+
+Status Update Since Last Meeting  
+Accomplishments:  
+● Finalized remaining Sprint 2 tasks  
+● Completed foundational setup for Sprint 3 accessibility and design updates  
+
+Before The Next Meeting – Plans:  
+● Begin work on assigned Sprint 3 features: aesthetics fixes, accessibility updates, Google Translate integration, dynamic pricing, nutritional/allergen alerts  
+● Confirm technical requirements for accessibility personas  
+
+Minutes from Meeting 1 
+The meeting began with a 10-minute review of what was achieved at the end of Sprint 2 and a quick walkthrough of items needing touch-ups. The team spent 15 minutes breaking down Sprint 3 tasks, assigning work based on individual strengths: Amit would lead aesthetic fixes and menu item updates, Haya would develop nutritional/allergen alerts, Kesha would focus on dynamic pricing, Sarvesh and Haya would collaborate on Google Translate integration, and Andrey would implement magnification and text size increases. The next 10 minutes were spent adjusting the sprint backlog, verifying that story points were reasonable. The final 10 minutes were used to set expectations for completion timelines and checking that everyone was clear on their responsibilities.
+
+
+
+SCRUM Meeting 2 for BobaBoba  
+Prepared by: Amit Kancherla  
+Meeting Date: 4/21/25  
+
+Meeting Attendees  
+1. Sarvesh Karunakaran  
+2. Andrey Pridgen  
+3. Haya Abusada  
+4. Amit Kancherla  
+5. Kesha Patel  
+
+Meeting Agenda Items  
+● Provide status updates on Sprint 3 tasks  
+● Address any blockers or challenges  
+● Share feedback on completed features  
+● Update burndown charts  
+● Adjust priorities based on progress  
+
+Status Update Since Last Meeting  
+Accomplishments:  
+● Aesthetic updates completed (buttons, emojis, colors)  
+● Menu item update functionality fixed  
+● Nutrition and allergen alert system implemented  
+● Progress made on accessibility features and Google Translate API  
+
+Before The Next Meeting – Plans:  
+● Finalize integration of magnification and text size features  
+● Continue refining Google Translate functionality  
+● Polish nutritional/allergen modal design  
+
+Minutes from Previous Meeting  
+The first 10 minutes were used for each member to share their progress. Amit reported completing the aesthetic changes and fixing the update menu item logic, while Haya detailed her work on the nutritional and allergen alert system. Kesha confirmed dynamic pricing was fully functional. Sarvesh and Haya discussed the integration progress of Google Translate. Andrey shared partial completion of magnification and text resizing. For 15 minutes, the group identified a few bugs and inconsistencies that needed attention, especially with display formatting. The team took 5 minutes to update the burndown charts. During the next 10 minutes, action items were adjusted to ensure all accessibility features would be thoroughly tested. The final 10 minutes were spent reorganizing smaller tasks to balance the workload for the sprint's final days.
+
+
+
+SCRUM Meeting 3 for BobaBoba  
+Prepared by: Amit Kancherla  
+Meeting Date: 4/23/25  
+
+Meeting Attendees  
+1. Sarvesh Karunakaran  
+2. Andrey Pridgen  
+3. Haya Abusada  
+4. Amit Kancherla  
+5. Kesha Patel  
+
+Meeting Agenda Items  
+● Conduct final review of Sprint 3 progress  
+● Identify any last-minute issues or touch-ups needed  
+● Update final burndown chart  
+● Set transition plan into final polishing phase  
+
+Status Update Since Last Meeting  
+Accomplishments:  
+● All assigned Sprint 3 features completed and integrated  
+● Accessibility persona requirements met  
+● System functionality and GUI polished for final presentation  
+
+Before The Next Meeting – Plans:  
+● Perform final system tests and clean up minor UI details  
+● Prepare project documentation and sprint summaries  
+● Ready presentation materials  
+
+Minutes from Previous Meeting 
+The team started by spending 10 minutes verifying that all Sprint 3 tasks had been completed and functioned properly. During the next 15 minutes, they conducted peer testing, checking each other's features like text resizing, magnification, nutritional alerts, dynamic pricing, and translation support. Bugs found during testing were documented and quick fixes were assigned. The team spent 5 minutes updating the final burndown chart. The last 20 minutes were used to discuss polishing work, transition into final testing, and ensuring that minor cosmetic issues would be addressed. The group finalized who would prepare screenshots, sprint reports, and presentation materials for project wrap-up.
+
