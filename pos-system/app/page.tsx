@@ -39,22 +39,26 @@ export default function HomePage() {
       <div className="z-10 flex flex-col items-center gap-12">
         <h1 className="text-4xl font-bold text-[#b79c85]">BobaBoba</h1>
         <div className="flex flex-col sm:flex-row gap-6">
-          <Link href="/menu-board">
-            <button className="px-8 py-4 bg-[#b79c85] text-white text-xl font-semibold rounded-xl shadow hover:bg-[#8c6540] transition">
-              Menu Board
-            </button>
-          </Link>
-          <Link href="/customers">
-            <button className="px-8 py-4 bg-[#b79c85] text-white text-xl font-semibold rounded-xl shadow hover:bg-[#8c6540] transition">
-              Customers
-            </button>
-          </Link>
-          <Link href="/Order">
-            <button className="px-8 py-4 bg-[#b79c85] text-white text-xl font-semibold rounded-xl shadow hover:bg-[#8c6540] transition">
-              Employees
-            </button>
-          </Link>
+          <button
+            onClick={() => window.location.href = "/menu-board"}
+            className="px-8 py-4 bg-[#b79c85] text-white text-xl font-semibold rounded-xl shadow hover:bg-[#8c6540] transition"
+          >
+            Menu Board
+          </button>
+          <button
+            onClick={() => window.location.href = "/customers"}
+            className="px-8 py-4 bg-[#b79c85] text-white text-xl font-semibold rounded-xl shadow hover:bg-[#8c6540] transition"
+          >
+            Customers
+          </button>
+          <button
+            onClick={() => window.location.href = "/Order"}
+            className="px-8 py-4 bg-[#b79c85] text-white text-xl font-semibold rounded-xl shadow hover:bg-[#8c6540] transition"
+          >
+            Employees
+          </button>
         </div>
+
       </div>
     </div>
   );

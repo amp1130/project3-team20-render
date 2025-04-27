@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { AddOrderModal } from "@/components/ui/add-order-modal";
+import { AddCustomerOrderModal } from "@/components/ui/AddCustomerOrderModal";
 import { ToppingModal } from "@/components/ui/topping-modal";
 import { useTheme } from "@/context/theme-context";
 import { NutritionPopup } from "@/components/ui/NutritionPopup";
@@ -248,7 +248,7 @@ export function OrderManager({ initialItems = [] }: OrderManagerProps) {
           </Button>
         </div>
 
-        <AddOrderModal
+        <AddCustomerOrderModal
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
           orderItems={orderItems}
